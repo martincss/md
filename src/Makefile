@@ -6,7 +6,7 @@ CFLAGS = -o3
 LDFLAGS = -lm
 
 SOURCE_C = $(wildcard *.c)
-OBJECTS_C = $(patsubst %.c, %_c.o, $(SOURCE_C))
+OBJECTS_C = $(patsubst %.c, %.o, $(SOURCE_C))
 EXECUTABLE = ../bin/md.e
 
 md: $(EXECUTABLE)
