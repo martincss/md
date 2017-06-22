@@ -14,7 +14,7 @@ int hola(){
 int initizalize(int n_part, float* pos_x_ant, float* pos_y_ant, float* pos_z_ant,
                 float* vel_x_ant, float* vel_y_ant, float* vel_z_ant){
     // *** le puse cero por ahora, despues ver
-    for (i = 0; i < n_part; i++) {
+    for (int i = 0; i < n_part; i++) {
       pos_x_ant[i] = 0;
       pos_y_ant[i] = 0;
       pos_z_ant[i] = 0;
@@ -22,7 +22,7 @@ int initizalize(int n_part, float* pos_x_ant, float* pos_y_ant, float* pos_z_ant
       vel_y_ant[i] = 0;
       vel_z_ant[i] = 0;
     }
-                  
+
 }
 
 // avanza la posicion de una particula dada la fuerza
@@ -41,4 +41,18 @@ int adv_vel(float* vel_ant, float* vel_post, float paso, float* fuerza_ant, floa
   *vel_post = *vel_ant + paso*( *fuerza_post + *fuerza_ant )/2;
 
   return 0;
+}
+
+// calcula la temperatura a partir del valor medio de la energia cinetica
+float temperature(int n_part, float* vel_x, float* vel_y, float* vel_z){
+
+    float KE = 0, temp = 0;
+    // calcula la energia cinetica total (KE)
+    for (size_t i = 0; i < n_part; i++) {
+        KE += (vel_x[i]*vel_x[i] + vel_y[i]*vel_y[i] + vel_z[i]*vel_z[i]);
+    }
+    KE = KE/2;
+    temp = (2/3)*KE/n_part;
+
+    return temp;
 }
