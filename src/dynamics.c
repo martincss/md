@@ -7,26 +7,28 @@
 int hola(){
 
   printf("hola\n");
-
+  for (int i = 0; i < 0; i++) {
+    printf("chau\n");
+  }
   return 0;
 }
 
 // da valores iniciales a la posicion y velocidad de todas las part
 int initizalize_pos(int n_part, float l, float* pos_x_ant, float* pos_y_ant, float* pos_z_ant){
   float a = l/pow(n_part, 1/3.);       // distancia entre particulas en fc del lado de la caja
-  printf("a = %f\n", a);
+  // printf("a = %f\n", a);
   int n = 0;
   float b = pow(n_part, 1/3.) - 0.5;
   for (int i = 0; i < b; i++) {
     for (int j = 0; j < b; j++) {
       for (int k = 0; k < b; k++) {
         pos_x_ant[n] = a/2 + i*a;
-        printf("pos_x_ant(%i) = %f\n", n, pos_x_ant[n]);
+        // printf("pos_x_ant(%i) = %f\n", n, pos_x_ant[n]);
         pos_y_ant[n] = a/2 + j*a;
-        printf("pos_y_ant(%i) = %f\n", n, pos_y_ant[n]);
+        // printf("pos_y_ant(%i) = %f\n", n, pos_y_ant[n]);
         pos_z_ant[n] = a/2 + k*a;
-        printf("pos_y_ant(%i) = %f\n", n, pos_z_ant[n]);
-        printf("\n");
+        // printf("pos_y_ant(%i) = %f\n", n, pos_z_ant[n]);
+        // printf("\n");
         n++;
       }
     }
@@ -69,27 +71,45 @@ int adv_vel(int n, float* vel_ant, float* vel_post, float paso, float* fuerza_an
   return 0;
 }
 
+// calcula la distancia entre dos particulas
 float dist2(int i, int j, float* x, float* y, float* z){
   float r_ij = ( pow(x[i]-x[j],2) + pow(y[i]-y[j],2) + pow(z[i]-z[j],2) );
   return r_ij + 0.000001; // para evitar que sea cero, ver el orden de la correccion
 }
 
+// calcula el factor de las fuerza (usando derivada de LJ) entre dos particulas
+// separadas por una distancia/ (distancia)^2 = dist2
 float eval_LJ(float dist2, float r_cut){
   float epsilon = 1;
-  float sigma = 1:
-  
-
+  float sigma = 1;
+  float sigma6 = pow(sigma, 6);
+  float invr2 = 1/dist2;
+  float F = 0;
+  if (dist2 < r_cut) {
+    F = 24 * epsilon * sigma6 * pow(invr2, 3) * (2 * sigma6 * pow(invr2, 4) - invr2);
+  }
+  return F;
 }
 
+float F_tot(int i, int n_part, float* x, float* y, float* z, float r_cut, float *fuerza_x, float *fuerza_y, float *fuerza_z){
+  float distancia2 = 0;
+  float F = 0;
+  int j;
+  for (int j = 0; j < n_part; j++) {
+    distancia2 = dist2(i, j, x, y, z);
+    F = eval_LJ(distancia2, r_cut);
+    fuerza_x[i] += 1;
+  }
+}
 
-int time_evol(int n_part, float paso, float* pos_x_ant, float* pos_x_post,
+int time_evol(int n_part, float l, float paso, float* pos_x_ant, float* pos_x_post,
               float* pos_y_ant, float* pos_y_post, float* pos_z_ant,
               float* pos_z_post, float* vel_x_ant, float* vel_x_post,
               float* vel_y_ant, float* vel_y_post, float* vel_z_ant,
               float* vel_z_post, float* fuerza_x_ant, float* fuerza_x_post,
               float* fuerza_y_ant, float* fuerza_y_post, float* fuerza_z_ant,
               float* fuerza_z_post){
-  for (int n = 0; i < n_part; n++) {
+  for (int n = 0; n < n_part; n++) {
     adv_pos(n, pos_x_ant, pos_x_post, l, vel_x_ant, paso, fuerza_x_ant);
     adv_pos(n, pos_y_ant, pos_y_post, l, vel_y_ant, paso, fuerza_y_ant);
     adv_pos(n, pos_z_ant, pos_z_post, l, vel_z_ant, paso, fuerza_z_ant);
