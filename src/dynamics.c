@@ -13,6 +13,7 @@ int hola(){
   return 0;
 }
 
+
 // da valores iniciales a la posicion y velocidad de todas las part
 int initizalize_pos(int n_part, float l, float* pos_x_ant, float* pos_y_ant, float* pos_z_ant){
   float a = l/pow(n_part, 1/3.);       // distancia entre particulas en fc del lado de la caja
@@ -91,15 +92,33 @@ float eval_LJ(float dist2, float r_cut){
   return F;
 }
 
-float F_tot(int i, int n_part, float* x, float* y, float* z, float r_cut, float *fuerza_x, float *fuerza_y, float *fuerza_z){
+int F_tot(int i, int n_part, float* x, float* y, float* z, float r_cut, float *fuerza_x, float *fuerza_y, float *fuerza_z){
+  // vacia el array de fuerzas antes de calcular
+  for (int j = 0; j < n_part; j++) {
+    fuerza_x[j] = 0;
+    fuerza_y[j] = 0;
+    fuerza_z[j] = 0;
+  }
+  int j;
   float distancia2 = 0;
   float F = 0;
-  int j;
-  for (int j = 0; j < n_part; j++) {
+  // suma para cada particula i, las fuerzas F_ij, que resulta en la F_i total
+  for (j = 0; j < i; j++) {
     distancia2 = dist2(i, j, x, y, z);
     F = eval_LJ(distancia2, r_cut);
-    fuerza_x[i] += 1;
+    fuerza_x[i] += F * (x[i] - x[j]);
+    fuerza_y[i] += F * (y[i] - y[j]);
+    fuerza_z[i] += F * (z[i] - z[j]);
   }
+  // lo divide en rangos para evitar i=j
+  for (j = i+1; j < n_part; j++) {
+    distancia2 = dist2(i, j, x, y, z);
+    F = eval_LJ(distancia2, r_cut);
+    fuerza_x[i] += F * (x[i] - x[j]);;
+    fuerza_y[i] += F * (y[i] - y[j]);;
+    fuerza_z[i] += F * (z[i] - z[j]);;
+  }
+  return 0;
 }
 
 int time_evol(int n_part, float l, float paso, float* pos_x_ant, float* pos_x_post,
@@ -114,7 +133,9 @@ int time_evol(int n_part, float l, float paso, float* pos_x_ant, float* pos_x_po
     adv_pos(n, pos_y_ant, pos_y_post, l, vel_y_ant, paso, fuerza_y_ant);
     adv_pos(n, pos_z_ant, pos_z_post, l, vel_z_ant, paso, fuerza_z_ant);
 
-    // aca calcula la fuerza post
+    float r_cut = 0.2; //cambiar esto
+
+    F_tot(n, n_part, pos_x_post, pos_y_post, pos_z_post, r_cut, fuerza_x_post, fuerza_y_post, fuerza_z_post);
 
     adv_vel(n, vel_x_ant, vel_x_post, paso, fuerza_x_ant, fuerza_x_post);
     adv_vel(n, vel_y_ant, vel_y_post, paso, fuerza_y_ant, fuerza_y_post);
