@@ -2,6 +2,7 @@
 #include <time.h>
 #include <stdlib.h>
 #include <math.h>
+#include <stdio.h>
 
 int hola(){
 
@@ -11,37 +12,97 @@ int hola(){
 }
 
 // da valores iniciales a la posicion y velocidad de todas las part
-int initizalize(int n_part, float* pos_x_ant, float* pos_y_ant, float* pos_z_ant,
-                float* vel_x_ant, float* vel_y_ant, float* vel_z_ant){
-    // *** le puse cero por ahora, despues ver
-    for (int i = 0; i < n_part; i++) {
-      pos_x_ant[i] = 0;
-      pos_y_ant[i] = 0;
-      pos_z_ant[i] = 0;
-      vel_x_ant[i] = 0;
-      vel_y_ant[i] = 0;
-      vel_z_ant[i] = 0;
+int initizalize_pos(int n_part, float l, float* pos_x_ant, float* pos_y_ant, float* pos_z_ant){
+  float a = l/pow(n_part, 1/3.);       // distancia entre particulas en fc del lado de la caja
+  printf("a = %f\n", a);
+  int n = 0;
+  float b = pow(n_part, 1/3.) - 0.5;
+  for (int i = 0; i < b; i++) {
+    for (int j = 0; j < b; j++) {
+      for (int k = 0; k < b; k++) {
+        pos_x_ant[n] = a/2 + i*a;
+        printf("pos_x_ant(%i) = %f\n", n, pos_x_ant[n]);
+        pos_y_ant[n] = a/2 + j*a;
+        printf("pos_y_ant(%i) = %f\n", n, pos_y_ant[n]);
+        pos_z_ant[n] = a/2 + k*a;
+        printf("pos_y_ant(%i) = %f\n", n, pos_z_ant[n]);
+        printf("\n");
+        n++;
+      }
     }
+  }
+  return 0;
+}
 
+float gauss(){                  // faltaria que dependa de sigma (mu = 0)
+  float s = 0;
+  for (int i = 0; i < 100; i++) {
+    s += (rand()/RAND_MAX);
+  }
+  return s/100 -0.5;
+}
+
+int initizalize_vel(int n_part, float* vel_x_ant, float* vel_y_ant, float* vel_z_ant){
+  for (int n = 0; n < n_part; n++) {
+    vel_x_ant[n] = gauss();
+    vel_y_ant[n] = gauss();
+    vel_z_ant[n] = gauss();
+  }
+  return 0;
 }
 
 // avanza la posicion de una particula dada la fuerza
 // r(t+h) = r(t) + hv(t) + h^2/2 F(t)
-int adv_pos(float* pos_ant, float* pos_post, float* vel, float paso, float* fuerza){
+int adv_pos(int n, float* pos_ant, float* pos_post, float l, float* vel, float paso, float* fuerza){
 
-  *pos_post = *pos_ant + paso*(*vel) + (paso*paso/2)*(*fuerza);
-
+  pos_post[n] = pos_ant[n] + paso*(vel[n]) + (paso*paso/2)*(fuerza[n]);
+  pos_post[n] = pos_post[n] - l * (fmodf(pos_post[n], l));
   return 0;
 }
 
 // avanza la velocidad de una particula con verlet
 // v(t+h) = v(t) + h*[F(t+h)+F(t)]/2
-int adv_vel(float* vel_ant, float* vel_post, float paso, float* fuerza_ant, float* fuerza_post){
+int adv_vel(int n, float* vel_ant, float* vel_post, float paso, float* fuerza_ant, float* fuerza_post){
 
-  *vel_post = *vel_ant + paso*( *fuerza_post + *fuerza_ant )/2;
+  vel_post[n] = vel_ant[n] + paso*( fuerza_post[n] + fuerza_ant[n] )/2;
 
   return 0;
 }
+
+float dist2(int i, int j, float* x, float* y, float* z){
+  float r_ij = ( pow(x[i]-x[j],2) + pow(y[i]-y[j],2) + pow(z[i]-z[j],2) );
+  return r_ij + 0.000001; // para evitar que sea cero, ver el orden de la correccion
+}
+
+float eval_LJ(float dist2, float r_cut){
+  float epsilon = 1;
+  float sigma = 1:
+  
+
+}
+
+
+int time_evol(int n_part, float paso, float* pos_x_ant, float* pos_x_post,
+              float* pos_y_ant, float* pos_y_post, float* pos_z_ant,
+              float* pos_z_post, float* vel_x_ant, float* vel_x_post,
+              float* vel_y_ant, float* vel_y_post, float* vel_z_ant,
+              float* vel_z_post, float* fuerza_x_ant, float* fuerza_x_post,
+              float* fuerza_y_ant, float* fuerza_y_post, float* fuerza_z_ant,
+              float* fuerza_z_post){
+  for (int n = 0; i < n_part; n++) {
+    adv_pos(n, pos_x_ant, pos_x_post, l, vel_x_ant, paso, fuerza_x_ant);
+    adv_pos(n, pos_y_ant, pos_y_post, l, vel_y_ant, paso, fuerza_y_ant);
+    adv_pos(n, pos_z_ant, pos_z_post, l, vel_z_ant, paso, fuerza_z_ant);
+
+    // aca calcula la fuerza post
+
+    adv_vel(n, vel_x_ant, vel_x_post, paso, fuerza_x_ant, fuerza_x_post);
+    adv_vel(n, vel_y_ant, vel_y_post, paso, fuerza_y_ant, fuerza_y_post);
+    adv_vel(n, vel_z_ant, vel_z_post, paso, fuerza_z_ant, fuerza_z_post);
+  }
+  return 0;
+}
+
 
 // calcula la temperatura a partir del valor medio de la energia cinetica
 float temperature(int n_part, float* vel_x, float* vel_y, float* vel_z){

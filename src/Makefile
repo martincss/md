@@ -1,20 +1,24 @@
 .PHONY: clean md
 
+# variables (todo lo rojo)
 CC = gcc
 LD = $(CC)
-CFLAGS = -o3
-LDFLAGS = -lm
+CFLAGS = -std=gnu99 -O3
+LD_FLAGS = -lm
 
-SOURCE_C = $(wildcard *.c)
+SOURCE_C = $(wildcard *.c)					# todas las cosas que terminan en '.c'
 OBJECTS_C = $(patsubst %.c, %.o, $(SOURCE_C))
-EXECUTABLE = ../bin/md.e
+EXECUTABLE = ../bin/md.e						# defino el ejecutable
 
 md: $(EXECUTABLE)
 
-dynamics.o: dynamics.c
-	$(CC) $(CFLAGS) -c $^ -o $@
+dynamics.o: dynamics.c							# target: dependencia
+	$(CC) $(CFLAGS) -c $^ -o $@			# reglas de compilacion
 
-../bin/md.e: dynamics.o md.c
+# $@ = target
+# $^ = todas las dependencias
+
+../bin/md.e: dynamics.o md.c				# archivo: dependencias
 	$(LD) $^ $(LD_FLAGS) -o $@
 
 clean:
