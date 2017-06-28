@@ -43,6 +43,9 @@ int main(int argc, char **argv) {
   for (int i = 0; i < n_part; i++) {
     printf("pos x es %f\n", pos_x_ant[i]);
     printf("vel x es %f\n", vel_x_ant[i]);
+    printf("pos y es %f\n", pos_y_ant[i]);
+    printf("vel y es %f\n", vel_y_ant[i]);
+
   }
 
   return 0;
