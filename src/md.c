@@ -48,10 +48,10 @@ int main(int argc, char **argv) {
   initizalize_pos(n_part, l, pos_x_ant, pos_y_ant, pos_z_ant);
   initizalize_vel(n_part, vel_x_ant, vel_y_ant, vel_z_ant);
 
-  float r_cut = 5;
+  float r_cut = 2.5;   // r_cut = (2.5 * sigma), tomamos sigma = 1
 
   for (int n = 0; n < n_part; n++) {
-    F_tot(n, n_part, pos_x_ant, pos_y_ant, pos_z_ant, r_cut, fuerza_x_ant, fuerza_y_ant, fuerza_z_ant);
+    F_tot(n, n_part, l, pos_x_ant, pos_y_ant, pos_z_ant, r_cut, fuerza_x_ant, fuerza_y_ant, fuerza_z_ant);
   }
 
 

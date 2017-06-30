@@ -74,28 +74,46 @@ int adv_vel(int n, float* vel_ant, float* vel_post, float paso, float* fuerza_an
   return 0;
 }
 
+int sign(float a, float b){
+  if (b >= 0) {
+    return a;
+  }
+  else{
+    return -a;
+  }
+}
+
+float delta_coord(int i, int j, float* coord, float l){
+  float delta = coord[i] - coord[j];
+  if (abs(delta) > 0.5 * l) {
+    delta = delta - sign(l, delta);
+  }
+  return delta;
+}
+
 // calcula la distancia entre dos particulas
-float dist2(int i, int j, float* x, float* y, float* z){
-  float r_ij = ( pow(x[i]-x[j],2) + pow(y[i]-y[j],2) + pow(z[i]-z[j],2) );
+float dist2(float dx, float dy, float dz){
+  float r_ij = ( pow(dx,2) + pow(dy,2) + pow(dz,2) );
   return r_ij + 0.000001; // para evitar que sea cero, ver el orden de la correccion
 }
 
 // calcula el factor de las fuerza (usando derivada de LJ) entre dos particulas
 // separadas por una distancia/ (distancia)^2 = dist2
 float eval_LJ(float dist2, float r_cut){      // sigma como macro? unidades reducidas?
-  float epsilon = 1;
-  float sigma = 0.2;
-  float sigma6 = pow(sigma, 6);
+  // float epsilon = 1;
+  // float sigma = 1;
+  // float sigma6 = pow(sigma, 6);
   float invr2 = 1/dist2;
   float F = 0;
   if (dist2 < r_cut) {
-    F = 24 * epsilon * sigma6 * pow(invr2, 3) * (2 * sigma6 * pow(invr2, 4) - invr2);
+    // F = 24 * epsilon * sigma6 * pow(invr2, 3) * (2 * sigma6 * pow(invr2, 4) - invr2);
+    F = 24 * pow(invr2, 3) * (2 * pow(invr2, 4) - invr2);
   }
   return F;
 }
 
 
-int F_tot(int i, int n_part, float* x, float* y, float* z, float r_cut, float *fuerza_x, float *fuerza_y, float *fuerza_z){
+int F_tot(int i, int n_part, float l, float* x, float* y, float* z, float r_cut, float *fuerza_x, float *fuerza_y, float *fuerza_z){
   // vacia el array de fuerzas antes de calcular
   fuerza_x[i] = 0;
   fuerza_y[i] = 0;
@@ -105,23 +123,29 @@ int F_tot(int i, int n_part, float* x, float* y, float* z, float r_cut, float *f
   int j;
   // suma para cada particula i, las fuerzas F_ij, que resulta en la F_i total
 
-  // no estamos teniendo en cuenta las imagenes!
+  float dx, dy, dz;
   for (j = 0; j < i; j++) {
-    distancia2 = dist2(i, j, x, y, z);
+    dx = delta_coord(i, j, x, l);
+    dy = delta_coord(i, j, y, l);
+    dz = delta_coord(i, j, z, l);
+    distancia2 = dist2(dx, dy, dz);
     F = eval_LJ(distancia2, r_cut);
     // printf("F = %f\n", F);
-    fuerza_x[i] += F * (x[i] - x[j]);
-    fuerza_y[i] += F * (y[i] - y[j]);
-    fuerza_z[i] += F * (z[i] - z[j]);
+    fuerza_x[i] += F * (dx);
+    fuerza_y[i] += F * (dy);
+    fuerza_z[i] += F * (dz);
   }
   // lo divide en rangos para evitar i=j
   for (j = i+1; j < n_part; j++) {
-    distancia2 = dist2(i, j, x, y, z);
+    dx = delta_coord(i, j, x, l);
+    dy = delta_coord(i, j, y, l);
+    dz = delta_coord(i, j, z, l);
+    distancia2 = dist2(dx, dy, dz);
     F = eval_LJ(distancia2, r_cut);
     // printf("F = %f\n", F);
-    fuerza_x[i] += F * (x[i] - x[j]);;
-    fuerza_y[i] += F * (y[i] - y[j]);;
-    fuerza_z[i] += F * (z[i] - z[j]);;
+    fuerza_x[i] += F * (dx);
+    fuerza_y[i] += F * (dy);
+    fuerza_z[i] += F * (dz);
   }
   return 0;
 }
@@ -140,7 +164,7 @@ int time_evol(int n_part, float l, float paso, float paso2, float* pos_x_ant, fl
 
     float r_cut = 0.2; //cambiar esto
 
-    F_tot(n, n_part, pos_x_post, pos_y_post, pos_z_post, r_cut, fuerza_x_post, fuerza_y_post, fuerza_z_post);
+    F_tot(n, n_part, l, pos_x_post, pos_y_post, pos_z_post, r_cut, fuerza_x_post, fuerza_y_post, fuerza_z_post);
 
     adv_vel(n, vel_x_ant, vel_x_post, paso, fuerza_x_ant, fuerza_x_post);
     adv_vel(n, vel_y_ant, vel_y_post, paso, fuerza_y_ant, fuerza_y_post);
