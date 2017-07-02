@@ -59,6 +59,16 @@ int main(int argc, char **argv) {
   initizalize_pos(n_part, l, pos_x_ant, pos_y_ant, pos_z_ant);
   initizalize_vel(n_part, vel_x_ant, vel_y_ant, vel_z_ant, T);
 
+  kinetic_temperature(n_part, 0, vel_x_ant, vel_y_ant, vel_z_ant, temperature, kinetic);
+  potential_energy(n_part, 0, l, pos_x_ant, pos_y_ant, pos_z_ant, R_CUT2, potential);
+  total_energy(0, kinetic, potential, E_total);
+
+  printf("------------------------------------");
+  printf("INICIAL\n");
+  printf("ENERGIAS\n");
+  printf("cinetica = %f, potencial = %f, total = %f\n", kinetic[0], potential[0], E_total[0]);
+  printf("temperatura = %f\n", temperature[0]);
+  printf("\n");
 
   for (int i = 0; i < steps; i++) {
 
@@ -116,23 +126,10 @@ int main(int argc, char **argv) {
 
   }
 
-  // for (int i = 0; i < n_part; i++) {
-  //   printf("particula = %i,   ", i);
-  //   printf("\n");
-  //   printf("pos x es %f,    ", pos_x_ant[i]);
-  //   printf("vel x es %f,    ", vel_x_ant[i]);
-  //   printf("fuerza x es %f,    ", fuerza_x_ant[i]);
-  //   printf("\n");
-  //   printf("pos y es %f,    ", pos_y_ant[i]);
-  //   printf("vel y es %f,    ", vel_y_ant[i]);
-  //   printf("fuerza y es %f,    ", fuerza_y_ant[i]);
-  //   printf("\n");
-  //   printf("pos z es %f,    ", pos_z_ant[i]);
-  //   printf("vel z es %f,    ", vel_z_ant[i]);
-  //   printf("fuerza z es %f,    ", fuerza_z_ant[i]);
-  //   printf("\n");
-  //   printf("\n");
-  // }
+  free(pos_x_ant);
+  free(pos_x_post);
+  free(pos_y_ant);
+  free(pos_y_post);
 
   return 0;
 }

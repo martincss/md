@@ -40,7 +40,7 @@ int initizalize_pos(int n_part, float l, float* pos_x_ant, float* pos_y_ant, flo
 float gauss(float T){                              // faltaria que dependa de sigma (mu = 0)
   float sigma_gauss2 = T;
   float delta = sqrt(1200*sigma_gauss2);
-  printf("delta = %f\n", delta);
+  // printf("delta = %f\n", delta);
   float s = 0;
   for (int i = 0; i < 100; i++) {
     s += ((float) rand() / RAND_MAX);          // habia que agregar (float)
@@ -65,7 +65,14 @@ int initizalize_vel(int n_part, float* vel_x_ant, float* vel_y_ant, float* vel_z
 int adv_pos(int n, float* pos_ant, float* pos_post, float l, float* vel, float paso, float paso2, float* fuerza){
 
   pos_post[n] = pos_ant[n] + paso*(vel[n]) + (paso2)*(fuerza[n]);
-  pos_post[n] = pos_post[n] - l * (fmodf(pos_post[n], l));
+  pos_post[n] = fmodf(pos_post[n],l);
+  // pos_post[n] = pos_post[n] - l * (fmodf(pos_post[n], l));
+  // if (pos_post[n] < 0) {
+  //   pos_post[n] += l;
+  // }
+  // else if (pos_post[n] > l) {
+  //   pos_post[n] -= l;
+  // }
   return 0;
 }
 
