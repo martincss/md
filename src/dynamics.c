@@ -37,21 +37,28 @@ int initizalize_pos(int n_part, float l, float* pos_x_ant, float* pos_y_ant, flo
   return 0;
 }
 
-float gauss(){                  // faltaria que dependa de sigma (mu = 0)
+float gauss(float T){                              // faltaria que dependa de sigma (mu = 0)
+  float sigma_gauss2 = 3*T;
+  float delta = sqrt(1200*sigma_gauss2);
+  printf("delta = %f\n", delta);
   float s = 0;
   for (int i = 0; i < 100; i++) {
-    s += ((float)rand()/RAND_MAX);          // habia que agregar (float)
+    if (i == 1) {
+      printf("s[0] = %f\n", s);
+    }
+    s += ((float) fmodf(rand(), delta));          // habia que agregar (float)
     // printf("paso i =%i, s = %f\n", i, s);
   }
   // printf("gauss() = %f\n", (s/100 -0.5));
   return s/100 -0.5;
 }
 
-int initizalize_vel(int n_part, float* vel_x_ant, float* vel_y_ant, float* vel_z_ant){
+
+int initizalize_vel(int n_part, float* vel_x_ant, float* vel_y_ant, float* vel_z_ant, float T){
   for (int n = 0; n < n_part; n++) {
-    vel_x_ant[n] = gauss();
-    vel_y_ant[n] = gauss();
-    vel_z_ant[n] = gauss();
+    vel_x_ant[n] = gauss(T);
+    vel_y_ant[n] = gauss(T);
+    vel_z_ant[n] = gauss(T);
   }
   return 0;
 }
@@ -113,7 +120,7 @@ float eval_LJ(float dist2, float r_cut){      // sigma como macro? unidades redu
 }
 
 
-int F_tot(int i, int n_part, float l, float* x, float* y, float* z, float r_cut, float *fuerza_x, float *fuerza_y, float *fuerza_z){
+int F_tot(int i, int n_part, float l, float* x, float* y, float* z, float r_cut2, float *fuerza_x, float *fuerza_y, float *fuerza_z){
   // vacia el array de fuerzas antes de calcular
   fuerza_x[i] = 0;
   fuerza_y[i] = 0;
@@ -129,7 +136,7 @@ int F_tot(int i, int n_part, float l, float* x, float* y, float* z, float r_cut,
     dy = delta_coord(i, j, y, l);
     dz = delta_coord(i, j, z, l);
     distancia2 = dist2(dx, dy, dz);
-    F = eval_LJ(distancia2, r_cut);
+    F = eval_LJ(distancia2, r_cut2);
     // printf("F = %f\n", F);
     fuerza_x[i] += F * (dx);
     fuerza_y[i] += F * (dy);
@@ -141,7 +148,7 @@ int F_tot(int i, int n_part, float l, float* x, float* y, float* z, float r_cut,
     dy = delta_coord(i, j, y, l);
     dz = delta_coord(i, j, z, l);
     distancia2 = dist2(dx, dy, dz);
-    F = eval_LJ(distancia2, r_cut);
+    F = eval_LJ(distancia2, r_cut2);
     // printf("F = %f\n", F);
     fuerza_x[i] += F * (dx);
     fuerza_y[i] += F * (dy);
@@ -156,15 +163,14 @@ int time_evol(int n_part, float l, float paso, float paso2, float* pos_x_ant, fl
               float* vel_y_ant, float* vel_y_post, float* vel_z_ant,
               float* vel_z_post, float* fuerza_x_ant, float* fuerza_x_post,
               float* fuerza_y_ant, float* fuerza_y_post, float* fuerza_z_ant,
-              float* fuerza_z_post){
+              float* fuerza_z_post, float r_cut2){
   for (int n = 0; n < n_part; n++) {
     adv_pos(n, pos_x_ant, pos_x_post, l, vel_x_ant, paso, paso2, fuerza_x_ant);
     adv_pos(n, pos_y_ant, pos_y_post, l, vel_y_ant, paso, paso2, fuerza_y_ant);
     adv_pos(n, pos_z_ant, pos_z_post, l, vel_z_ant, paso, paso2, fuerza_z_ant);
 
-    float r_cut = 0.2; //cambiar esto
 
-    F_tot(n, n_part, l, pos_x_post, pos_y_post, pos_z_post, r_cut, fuerza_x_post, fuerza_y_post, fuerza_z_post);
+    F_tot(n, n_part, l, pos_x_post, pos_y_post, pos_z_post, r_cut2, fuerza_x_post, fuerza_y_post, fuerza_z_post);
 
     adv_vel(n, vel_x_ant, vel_x_post, paso, fuerza_x_ant, fuerza_x_post);
     adv_vel(n, vel_y_ant, vel_y_post, paso, fuerza_y_ant, fuerza_y_post);
