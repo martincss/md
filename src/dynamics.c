@@ -43,14 +43,11 @@ float gauss(float T){                              // faltaria que dependa de si
   printf("delta = %f\n", delta);
   float s = 0;
   for (int i = 0; i < 100; i++) {
-    if (i == 1) {
-      printf("s[0] = %f\n", s);
-    }
-    s += ((float) rand()/RAND_MAX);          // habia que agregar (float)
-    // printf("paso i =%i, s = %f\n", i, s);
+    s += ((float) rand() / RAND_MAX);          // habia que agregar (float)
   }
   // printf("gauss() = %f\n", (s/100 -0.5));
-  return (s/100 - 0.5) * delta;
+  // printf("gauss = %f\n", (s/100 -0.5) * delta);
+  return (s/100 -0.5) * delta;
 }
 
 
