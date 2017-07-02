@@ -38,7 +38,7 @@ int initizalize_pos(int n_part, float l, float* pos_x_ant, float* pos_y_ant, flo
 }
 
 float gauss(float T){                              // faltaria que dependa de sigma (mu = 0)
-  float sigma_gauss2 = 3*T;
+  float sigma_gauss2 = T;
   float delta = sqrt(1200*sigma_gauss2);
   printf("delta = %f\n", delta);
   float s = 0;
@@ -46,11 +46,11 @@ float gauss(float T){                              // faltaria que dependa de si
     if (i == 1) {
       printf("s[0] = %f\n", s);
     }
-    s += ((float) fmodf(rand(), delta));          // habia que agregar (float)
+    s += ((float) rand()/RAND_MAX);          // habia que agregar (float)
     // printf("paso i =%i, s = %f\n", i, s);
   }
   // printf("gauss() = %f\n", (s/100 -0.5));
-  return s/100 -0.5;
+  return (s/100 - 0.5) * delta;
 }
 
 

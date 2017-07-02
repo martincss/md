@@ -57,7 +57,7 @@ int main(int argc, char **argv) {
 
 
   initizalize_pos(n_part, l, pos_x_ant, pos_y_ant, pos_z_ant);
-  initizalize_vel(n_part, vel_x_ant, vel_y_ant, vel_z_ant);
+  initizalize_vel(n_part, vel_x_ant, vel_y_ant, vel_z_ant, T);
 
 
   for (int n = 0; n < n_part; n++) {
