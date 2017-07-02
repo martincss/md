@@ -5,6 +5,8 @@
 
 #define PASO 0.02
 #define PASO2 0.0002          // esto es paso al cuadrado sobre dos
+#define R_CUT2 6.25           // r_cut = (2.5 * sigma), tomamos sigma = 1
+
 
 // pasos a seguir:
 // calcular la energia (chequear que sea cte)
@@ -17,6 +19,7 @@ int main(int argc, char **argv) {
   // Inicializamos numero de particulas
   int n_part = 27;
   float l = 3;
+  float T = 0.728;
   // Inicializamos array de posiciones y velocidades
   // unos para un tiempo anterior y otros para el posterior
   float* pos_x_ant = malloc(n_part * sizeof(float));
@@ -46,12 +49,11 @@ int main(int argc, char **argv) {
 
 
   initizalize_pos(n_part, l, pos_x_ant, pos_y_ant, pos_z_ant);
-  initizalize_vel(n_part, vel_x_ant, vel_y_ant, vel_z_ant);
+  initizalize_vel(n_part, vel_x_ant, vel_y_ant, vel_z_ant, T);
 
-  float r_cut = 2.5;   // r_cut = (2.5 * sigma), tomamos sigma = 1
 
   for (int n = 0; n < n_part; n++) {
-    F_tot(n, n_part, l, pos_x_ant, pos_y_ant, pos_z_ant, r_cut, fuerza_x_ant, fuerza_y_ant, fuerza_z_ant);
+    F_tot(n, n_part, l, pos_x_ant, pos_y_ant, pos_z_ant, R_CUT2, fuerza_x_ant, fuerza_y_ant, fuerza_z_ant);
   }
 
 
