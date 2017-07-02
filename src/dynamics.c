@@ -66,6 +66,9 @@ int adv_pos(int n, float* pos_ant, float* pos_post, float l, float* vel, float p
 
   pos_post[n] = pos_ant[n] + paso*(vel[n]) + (paso2)*(fuerza[n]);
   pos_post[n] = fmodf(pos_post[n],l);
+  if (pos_post[n] > l || pos_post[n] < 0) {
+    printf("la posicion se fue del rango\n");
+  }
   // pos_post[n] = pos_post[n] - l * (fmodf(pos_post[n], l));
   // if (pos_post[n] < 0) {
   //   pos_post[n] += l;
@@ -105,6 +108,9 @@ float delta_coord(int i, int j, float* coord, float l){
 // calcula la distancia entre dos particulas
 float dist2(float dx, float dy, float dz){
   float r_ij = ( pow(dx,2) + pow(dy,2) + pow(dz,2) );
+  if (r_ij == 0) {
+    printf("se evito que la distancia fuese nula\n");
+  }
   return r_ij + 0.000001; // para evitar que sea cero, ver el orden de la correccion
 }
 
@@ -120,6 +126,9 @@ float eval_LJ(float dist2, float r_cut){      // sigma como macro? unidades redu
     // F = 24 * epsilon * sigma6 * pow(invr2, 3) * (2 * sigma6 * pow(invr2, 4) - invr2);
     F = 24 * pow(invr2, 3) * (2 * pow(invr2, 4) - invr2);
   }
+  // if (F>10000){
+  //   printf("la fuerza se paso de 10000\n");
+  // }
   return F;
 }
 
