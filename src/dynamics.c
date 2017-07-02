@@ -175,15 +175,46 @@ int time_evol(int n_part, float l, float paso, float paso2, float* pos_x_ant, fl
 
 
 // calcula la temperatura a partir del valor medio de la energia cinetica
-float temperature(int n_part, float* vel_x, float* vel_y, float* vel_z){
+// y tambien la energia cinetica, y guarda ambas en pointers
+int kinetic_temperature(int n_part, int iter, float* vel_x, float* vel_y, float* vel_z,
+                        float* temp, float* kinetic){
 
-    float KE = 0, temp = 0;
+    float KE = 0;
     // calcula la energia cinetica total (KE)
     for (size_t i = 0; i < n_part; i++) {
         KE += (vel_x[i]*vel_x[i] + vel_y[i]*vel_y[i] + vel_z[i]*vel_z[i]);
     }
     KE = KE/2;
-    temp = (2/3)*KE/n_part;
 
-    return temp;
+    temp[iter] = (2./3.)*KE/(float)n_part;
+    kinetic[iter] = KE;
+
+    return 0;
+}
+
+int potential_energy(int n_part, int iter, float l, float* x, float* y, float* z, float r_cut2, float* potential){
+
+  int i, j;
+  float dx, dy, dz;
+  float invr2, distancia2;
+  for (i = 0; i < n_part; i++) {
+    for (j = 0; j < i; j++) {
+      dx = delta_coord(i, j, x, l);
+      dy = delta_coord(i, j, y, l);
+      dz = delta_coord(i, j, z, l);
+      distancia2 = dist2(dx, dy, dz);
+      invr2 = 1/distancia2;
+      if (distancia2 < r_cut2) {
+        potential[iter] += 4 * pow(invr2,3) * ( pow(invr2,3) -1 );
+      }
+    }
+  }
+  return 0;
+}
+
+int total_energy(int iter, float* kinetic, float* potential, float* total){
+
+  total[iter] = kinetic[iter] + potential[iter];
+
+  return 0;
 }

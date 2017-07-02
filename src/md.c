@@ -17,32 +17,41 @@ int main(int argc, char **argv) {
   // Inicializamos numero de particulas
   int n_part = 27;
   float l = 3;
+  int steps = 1;
+  srand(time(NULL));
+
+  // Inicializamos arrays de energias cinetica, potencial y total
+  float* potential = calloc(steps, sizeof(float));
+  float* kinetic = calloc(steps, sizeof(float));
+  float* E_total = calloc(steps, sizeof(float));
+  float* temperature = calloc(steps, sizeof(float));
+
   // Inicializamos array de posiciones y velocidades
   // unos para un tiempo anterior y otros para el posterior
-  float* pos_x_ant = malloc(n_part * sizeof(float));
-  float* pos_y_ant = malloc(n_part * sizeof(float));
-  float* pos_z_ant = malloc(n_part * sizeof(float));
+  float* pos_x_ant = calloc(n_part, sizeof(float));
+  float* pos_y_ant = calloc(n_part, sizeof(float));
+  float* pos_z_ant = calloc(n_part, sizeof(float));
 
-  float* vel_x_ant = malloc(n_part * sizeof(float));
-  float* vel_y_ant = malloc(n_part * sizeof(float));
-  float* vel_z_ant = malloc(n_part * sizeof(float));
+  float* vel_x_ant = calloc(n_part, sizeof(float));
+  float* vel_y_ant = calloc(n_part, sizeof(float));
+  float* vel_z_ant = calloc(n_part, sizeof(float));
 
-  float* fuerza_x_ant = malloc(n_part * sizeof(float));
-  float* fuerza_y_ant = malloc(n_part * sizeof(float));
-  float* fuerza_z_ant = malloc(n_part * sizeof(float));
+  float* fuerza_x_ant = calloc(n_part, sizeof(float));
+  float* fuerza_y_ant = calloc(n_part, sizeof(float));
+  float* fuerza_z_ant = calloc(n_part, sizeof(float));
 
 
-  float* pos_x_post = malloc(n_part * sizeof(float));
-  float* pos_y_post = malloc(n_part * sizeof(float));
-  float* pos_z_post = malloc(n_part * sizeof(float));
+  float* pos_x_post = calloc(n_part, sizeof(float));
+  float* pos_y_post = calloc(n_part, sizeof(float));
+  float* pos_z_post = calloc(n_part, sizeof(float));
 
-  float* vel_x_post = malloc(n_part * sizeof(float));
-  float* vel_y_post = malloc(n_part * sizeof(float));
-  float* vel_z_post = malloc(n_part * sizeof(float));
+  float* vel_x_post = calloc(n_part, sizeof(float));
+  float* vel_y_post = calloc(n_part, sizeof(float));
+  float* vel_z_post = calloc(n_part, sizeof(float));
 
-  float* fuerza_x_post = malloc(n_part * sizeof(float));
-  float* fuerza_y_post = malloc(n_part * sizeof(float));
-  float* fuerza_z_post = malloc(n_part * sizeof(float));
+  float* fuerza_x_post = calloc(n_part, sizeof(float));
+  float* fuerza_y_post = calloc(n_part, sizeof(float));
+  float* fuerza_z_post = calloc(n_part, sizeof(float));
 
 
   initizalize_pos(n_part, l, pos_x_ant, pos_y_ant, pos_z_ant);
@@ -73,5 +82,15 @@ int main(int argc, char **argv) {
     printf("\n");
     printf("\n");
   }
+
+  kinetic_temperature(n_part, 0, vel_x_ant, vel_y_ant, vel_z_ant, temperature, kinetic);
+  potential_energy(n_part, 0, l, pos_x_ant, pos_y_ant, pos_z_ant, 6.25, potential);
+  total_energy(0, kinetic, potential, E_total);
+
+  printf("ENERGIAS\n");
+  printf("cinetica = %f, potencial = %f, total = %f\n", kinetic[0], potential[0], E_total[0]);
+  printf("temperatura = %f\n", temperature[0]);
+  printf("\n");
+  printf("\n");
   return 0;
 }
