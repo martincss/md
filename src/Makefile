@@ -3,7 +3,7 @@
 # variables (todo lo rojo)
 CC = gcc
 LD = $(CC)
-CFLAGS = -std=gnu99 -O3
+CFLAGS = -std=c99 -O3  # -std=c99
 LD_FLAGS = -lm
 
 SOURCE_C = $(wildcard *.c)					# todas las cosas que terminan en '.c'

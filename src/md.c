@@ -18,7 +18,7 @@ int main(int argc, char **argv) {
   // Inicializamos numero de particulas
   int n_part = 27;
   float l = 3;
-  int steps = 5;
+  int steps = 1;
   float T = 0.728;
   srand(time(NULL));
 
@@ -70,9 +70,11 @@ int main(int argc, char **argv) {
   printf("temperatura = %f\n", temperature[0]);
   printf("\n");
 
-  for (int i = 0; i < steps; i++) {
+  int i;
+  for (i = 0; i < steps; i++) {
 
-  for (int k = 0; k < n_part; k++) {
+  int k;
+  for (k = 0; k < n_part; k++) {
     printf("particula = %i,   ", k);
     printf("\n");
     printf("pos x es %f,    ", pos_x_ant[k]);
@@ -110,7 +112,8 @@ int main(int argc, char **argv) {
     printf("\n");
 
     //ahora las post son las nuevas ant
-    for (int j = 0; j < n_part; j++) {
+    int j;
+    for (j = 0; j < n_part; j++) {
       pos_x_ant[j] = pos_x_post[j];
       pos_y_ant[j] = pos_y_post[j];
       pos_z_ant[j] = pos_z_post[j];

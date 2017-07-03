@@ -151,6 +151,7 @@ int F_tot(int i, int n_part, float l, float* x, float* y, float* z, float r_cut2
     distancia2 = dist2(dx, dy, dz);
     F = eval_LJ(distancia2, r_cut2);
     // printf("F = %f\n", F);
+    printf("fuerza ejercida sobre i = %i por j = %i es fuerza = %f \n", i, j, F);
     fuerza_x[i] += F * (dx);
     fuerza_y[i] += F * (dy);
     fuerza_z[i] += F * (dz);
@@ -163,6 +164,7 @@ int F_tot(int i, int n_part, float l, float* x, float* y, float* z, float r_cut2
     distancia2 = dist2(dx, dy, dz);
     F = eval_LJ(distancia2, r_cut2);
     // printf("F = %f\n", F);
+    printf("fuerza ejercida sobre i = %i por j = %i es fuerza = %f \n", i, j, F);
     fuerza_x[i] += F * (dx);
     fuerza_y[i] += F * (dy);
     fuerza_z[i] += F * (dz);
