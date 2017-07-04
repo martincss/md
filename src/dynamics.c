@@ -66,16 +66,12 @@ int adv_pos(int n, float* pos_ant, float* pos_post, float l, float* vel, float p
 
   pos_post[n] = pos_ant[n] + paso*(vel[n]) + (paso2)*(fuerza[n]);
   pos_post[n] = fmodf(pos_post[n],l);
+  if (pos_post[n] < 0) {
+    pos_post[n] += l;
+  }
   if (pos_post[n] > l || pos_post[n] < 0) {
     printf("la posicion se fue del rango\n");
   }
-  // pos_post[n] = pos_post[n] - l * (fmodf(pos_post[n], l));
-  // if (pos_post[n] < 0) {
-  //   pos_post[n] += l;
-  // }
-  // else if (pos_post[n] > l) {
-  //   pos_post[n] -= l;
-  // }
   return 0;
 }
 
