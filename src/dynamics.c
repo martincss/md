@@ -116,7 +116,7 @@ float eval_LJ(float dist2, float r_cut){      // sigma como macro? unidades redu
   // float epsilon = 1;
   // float sigma = 1;
   // float sigma6 = pow(sigma, 6);
-  float invr2 = 1/dist2;
+  float invr2 = 1./dist2;
   float F = 0;
   if (dist2 < r_cut) {
     // F = 24 * epsilon * sigma6 * pow(invr2, 3) * (2 * sigma6 * pow(invr2, 4) - invr2);
@@ -147,7 +147,7 @@ int F_tot(int i, int n_part, float l, float* x, float* y, float* z, float r_cut2
     distancia2 = dist2(dx, dy, dz);
     F = eval_LJ(distancia2, r_cut2);
     // printf("F = %f\n", F);
-    printf("fuerza ejercida sobre i = %i por j = %i es fuerza = %f \n", i, j, F);
+    // printf("fuerza ejercida sobre i = %i por j = %i es fuerza = %f \n", i, j, F);
     fuerza_x[i] += F * (dx);
     fuerza_y[i] += F * (dy);
     fuerza_z[i] += F * (dz);
@@ -160,7 +160,7 @@ int F_tot(int i, int n_part, float l, float* x, float* y, float* z, float r_cut2
     distancia2 = dist2(dx, dy, dz);
     F = eval_LJ(distancia2, r_cut2);
     // printf("F = %f\n", F);
-    printf("fuerza ejercida sobre i = %i por j = %i es fuerza = %f \n", i, j, F);
+    // printf("fuerza ejercida sobre i = %i por j = %i es fuerza = %f \n", i, j, F);
     fuerza_x[i] += F * (dx);
     fuerza_y[i] += F * (dy);
     fuerza_z[i] += F * (dz);
@@ -179,10 +179,11 @@ int time_evol(int n_part, float l, float paso, float paso2, float* pos_x_ant, fl
     adv_pos(n, pos_x_ant, pos_x_post, l, vel_x_ant, paso, paso2, fuerza_x_ant);
     adv_pos(n, pos_y_ant, pos_y_post, l, vel_y_ant, paso, paso2, fuerza_y_ant);
     adv_pos(n, pos_z_ant, pos_z_post, l, vel_z_ant, paso, paso2, fuerza_z_ant);
-
-
+  }
+  for (int n = 0; n < n_part; n++) {
     F_tot(n, n_part, l, pos_x_post, pos_y_post, pos_z_post, r_cut2, fuerza_x_post, fuerza_y_post, fuerza_z_post);
-
+  }
+  for (int n = 0; n < n_part; n++) {
     adv_vel(n, vel_x_ant, vel_x_post, paso, fuerza_x_ant, fuerza_x_post);
     adv_vel(n, vel_y_ant, vel_y_post, paso, fuerza_y_ant, fuerza_y_post);
     adv_vel(n, vel_z_ant, vel_z_post, paso, fuerza_z_ant, fuerza_z_post);
@@ -198,12 +199,12 @@ int kinetic_temperature(int n_part, int iter, float* vel_x, float* vel_y, float*
 
     float KE = 0;
     // calcula la energia cinetica total (KE)
-    for (size_t i = 0; i < n_part; i++) {
+    for (int i = 0; i < n_part; i++) {
         KE += (vel_x[i]*vel_x[i] + vel_y[i]*vel_y[i] + vel_z[i]*vel_z[i]);
     }
     KE = KE/2;
 
-    temp[iter] = (2./3.)*KE/(float)n_part;
+    temp[iter] = (2./3.)*KE/n_part;
     kinetic[iter] = KE;
 
     return 0;
@@ -214,18 +215,21 @@ int potential_energy(int n_part, int iter, float l, float* x, float* y, float* z
   int i, j;
   float dx, dy, dz;
   float invr2, distancia2;
+  float U = 0;
   for (i = 0; i < n_part; i++) {
     for (j = 0; j < i; j++) {
       dx = delta_coord(i, j, x, l);
       dy = delta_coord(i, j, y, l);
       dz = delta_coord(i, j, z, l);
       distancia2 = dist2(dx, dy, dz);
-      invr2 = 1/distancia2;
+      invr2 = 1./distancia2;
       if (distancia2 < r_cut2) {
-        potential[iter] += 4 * pow(invr2,3) * ( pow(invr2,3) -1 );
+        U += 4 * pow(invr2,3) * ( pow(invr2,3) - 1. );
       }
     }
   }
+  potential[iter] = U;
+
   return 0;
 }
 
