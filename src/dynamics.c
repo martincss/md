@@ -66,6 +66,7 @@ int adv_pos(int n, float* pos_ant, float* pos_post, float l, float* vel, float p
 
   pos_post[n] = pos_ant[n] + paso*(vel[n]) + (paso2)*(fuerza[n]);
   pos_post[n] = fmodf(pos_post[n],l);
+  // printf("para n = %i, la posicion post es %f\n", n, pos_post[n]);
   if (pos_post[n] < 0) {
     pos_post[n] += l;
   }
@@ -95,15 +96,20 @@ int sign(float a, float b){
 
 float delta_coord(int i, int j, float* coord, float l){
   float delta = coord[i] - coord[j];
+  printf("\n");
+  printf("coord[i] = %f, coord[j] = %f\n", coord[i], coord[j]);
+  printf("la delta_coord entre i = %i y j = %i es %f\n", i, j, delta);
   if (abs(delta) > 0.5 * l) {
     delta = delta - sign(l, delta);
+    printf("i = %i delta = %f\n", i, delta);
   }
   return delta;
 }
 
 // calcula la distancia entre dos particulas
 float dist2(float dx, float dy, float dz){
-  float r_ij = ( pow(dx,2) + pow(dy,2) + pow(dz,2) );
+  float r_ij = ( powf(dx,2) + powf(dy,2) + powf(dz,2) );
+  // printf("pow(dx = %f,2) = %f\n", dx, pow(dx,2));
   if (r_ij == 0) {
     printf("se evito que la distancia fuese nula\n");
   }
@@ -116,7 +122,7 @@ float eval_LJ(float dist2, float r_cut){      // sigma como macro? unidades redu
   // float epsilon = 1;
   // float sigma = 1;
   // float sigma6 = pow(sigma, 6);
-  float invr2 = 1/dist2;
+  float invr2 = 1./dist2;
   float F = 0;
   if (dist2 < r_cut) {
     // F = 24 * epsilon * sigma6 * pow(invr2, 3) * (2 * sigma6 * pow(invr2, 4) - invr2);
@@ -136,15 +142,30 @@ int F_tot(int i, int n_part, float l, float* x, float* y, float* z, float r_cut2
   fuerza_z[i] = 0;
   float distancia2 = 0;
   float F = 0;
-  int j;
+  int j = 0;
   // suma para cada particula i, las fuerzas F_ij, que resulta en la F_i total
 
-  float dx, dy, dz;
+  float dx = 0;
+  float dy = 0;
+  float dz = 0;
+
+  for (int p = 0; p < n_part; p++) {
+    printf("recorro el array antes de calcular la F\n");
+    printf("x[%i] = %f\n", p, x[p]);
+    printf("y[%i] = %f\n", p, y[p]);
+    printf("z[%i] = %f\n", p, z[p]);
+  }
+
   for (j = 0; j < i; j++) {
+    printf("------PRIMER LOOP -----\n");
     dx = delta_coord(i, j, x, l);
     dy = delta_coord(i, j, y, l);
     dz = delta_coord(i, j, z, l);
     distancia2 = dist2(dx, dy, dz);
+    printf("\n");
+
+    printf("i = %i, j = %i, distancia2 = %f\n", i, j, distancia2);
+    printf("dx = %f, dy = %f, dz = %f \n", dx, dy, dz);
     F = eval_LJ(distancia2, r_cut2);
     // printf("F = %f\n", F);
     printf("fuerza ejercida sobre i = %i por j = %i es fuerza = %f \n", i, j, F);
@@ -152,19 +173,26 @@ int F_tot(int i, int n_part, float l, float* x, float* y, float* z, float r_cut2
     fuerza_y[i] += F * (dy);
     fuerza_z[i] += F * (dz);
   }
-  // lo divide en rangos para evitar i=j
-  for (j = i+1; j < n_part; j++) {
-    dx = delta_coord(i, j, x, l);
-    dy = delta_coord(i, j, y, l);
-    dz = delta_coord(i, j, z, l);
+  printf("\n");
+  // lo divide en rangos para evitar i=
+  for (int k = i+1; k < n_part; k++) { // definir el int k adentro del loop parece haber arreglado para la prueba
+    printf("------SEGUNDO LOOP -----\n");
+    dx = delta_coord(i, k, x, l);
+    dy = delta_coord(i, k, y, l);
+    dz = delta_coord(i, k, z, l);
     distancia2 = dist2(dx, dy, dz);
+    printf("\n");
+
+    printf("i = %i, k = %i, distancia2 = %f\n", i, k, distancia2);
+    printf("dx = %f, dy = %f, dz = %f \n", dx, dy, dz);
     F = eval_LJ(distancia2, r_cut2);
     // printf("F = %f\n", F);
-    printf("fuerza ejercida sobre i = %i por j = %i es fuerza = %f \n", i, j, F);
+    printf("fuerza ejercida sobre i = %i por k = %i es fuerza = %f \n", i, k, F);
     fuerza_x[i] += F * (dx);
     fuerza_y[i] += F * (dy);
     fuerza_z[i] += F * (dz);
   }
+  printf("\n");
   return 0;
 }
 
@@ -234,4 +262,31 @@ int total_energy(int iter, float* kinetic, float* potential, float* total){
   total[iter] = kinetic[iter] + potential[iter];
 
   return 0;
+}
+
+int prueba_dist(int n_part, float l, float *x,float *y, float *z){
+  int i = 0;
+  int j = 0;
+  float dx, dy, dz;
+  float distancia2;
+  for (i = 0; i < n_part; i++) {
+    for (j = 0; j < i; j++) {
+      dx = delta_coord(i, j, x, l);
+      dy = delta_coord(i, j, y, l);
+      dz = delta_coord(i, j, z, l);
+      distancia2 = dist2(dx, dy, dz);
+      printf("--------PRIMER LOOP (PRUEBA) ---- i = %i, j = %i, distancia2 = %f\n", i, j, distancia2);
+      printf("dx = %f, dy = %f, dz = %f \n", dx, dy, dz);
+    }
+    printf("\n");
+    for (j = i + 1; j < n_part; j++) {
+      dx = delta_coord(i, j, x, l);
+      dy = delta_coord(i, j, y, l);
+      dz = delta_coord(i, j, z, l);
+      distancia2 = dist2(dx, dy, dz);
+      printf("--------SEGUNDO LOOP (PRUEBA) ---- i = %i, j = %i, distancia2 = %f\n", i, j, distancia2);
+      printf("dx = %f, dy = %f, dz = %f \n", dx, dy, dz);
+    }
+    printf("\n");
+  }
 }

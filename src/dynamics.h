@@ -21,4 +21,5 @@ int time_evol(int n_part, float l, float paso, float paso2, float* pos_x_ant, fl
 int kinetic_temperature(int n_part, int iter, float* vel_x, float* vel_y, float* vel_z, float* temp, float* kinetic);
 int potential_energy(int n_part, int iter, float l, float* x, float* y, float* z, float r_cut2, float* potential);
 int total_energy(int iter, float* kinetic, float* potential, float* total);
+int prueba_dist(int n_part, float l, float *x,float *y, float *z);
 #endif
