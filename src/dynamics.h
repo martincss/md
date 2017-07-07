@@ -7,6 +7,7 @@ int initizalize_vel(int n_part, float* vel_x_ant, float* vel_y_ant, float* vel_z
 int adv_pos(int n, float* pos_ant, float* pos_post, float l, float* vel, float paso, float paso2, float* fuerza);
 int adv_vel(int n, float* vel_ant, float* vel_post, float paso, float* fuerza_ant, float* fuerza_post);
 int sign(float a, float b);
+float delta_posta(int i, int j, float* coord, float l);
 float delta_coord(int i, int j, float* coord, float l);
 float dist2(float dx, float dy, float dz);
 float eval_LJ(float dist2, float r_cut);

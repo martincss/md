@@ -93,6 +93,11 @@ int sign(float a, float b){
   }
 }
 
+float delta_posta(int i, int j, float* coord, float l){
+  float delta = coord[i] - coord[j];
+  return delta;
+}
+
 float delta_coord(int i, int j, float* coord, float l){
   float delta = coord[i] - coord[j];
   if (abs(delta) > 0.5 * l) {
@@ -135,35 +140,70 @@ int F_tot(int i, int n_part, float l, float* x, float* y, float* z, float r_cut2
   fuerza_y[i] = 0;
   fuerza_z[i] = 0;
   float distancia2 = 0;
+  float distancia2_im = 0;
   float F = 0;
+  float F_im = 0;
   int j;
   // suma para cada particula i, las fuerzas F_ij, que resulta en la F_i total
 
-  float dx, dy, dz;
+  float dx, dy, dz, dx_im, dy_im, dz_im;
   for (j = 0; j < i; j++) {
-    dx = delta_coord(i, j, x, l);
-    dy = delta_coord(i, j, y, l);
-    dz = delta_coord(i, j, z, l);
+
+    dx = delta_posta(i, j, x, l);
+    dx_im = delta_coord(i, j, x, l); // eventual imagen mas cercana
+    dy = delta_posta(i, j, y, l);
+    dy_im = delta_coord(i, j, y, l);
+    dz = delta_posta(i, j, z, l);
+    dz_im = delta_coord(i, j, z, l);
+
+
     distancia2 = dist2(dx, dy, dz);
+    distancia2_im = dist2(dx_im, dy_im, dz_im);
     F = eval_LJ(distancia2, r_cut2);
+
+    // if (distancia2 != distancia2_im){
+    //   // printf("las dist no son iguales, i = %i, j = %i\n", i, j);
+    //   F_im = eval_LJ(distancia2_im, r_cut2);
+    // }
+    // else{
+    //   F_im = 0;
+    // }
+
     // printf("F = %f\n", F);
     // printf("fuerza ejercida sobre i = %i por j = %i es fuerza = %f \n", i, j, F);
-    fuerza_x[i] += F * (dx);
-    fuerza_y[i] += F * (dy);
-    fuerza_z[i] += F * (dz);
+    fuerza_x[i] += (F * (dx) + F_im * dx_im);
+    fuerza_y[i] += (F * (dy) + F_im * dy_im);
+    fuerza_z[i] += (F * (dz) + F_im * dz_im);
   }
   // lo divide en rangos para evitar i=j
+  F_im = 0;
   for (j = i+1; j < n_part; j++) {
-    dx = delta_coord(i, j, x, l);
-    dy = delta_coord(i, j, y, l);
-    dz = delta_coord(i, j, z, l);
+
+    dx = delta_posta(i, j, x, l);
+    dx_im = delta_coord(i, j, x, l);
+    dy = delta_posta(i, j, y, l);
+    dy_im = delta_coord(i, j, y, l);
+    dz = delta_posta(i, j, z, l);
+    dz_im = delta_coord(i, j, z, l);
+
+
     distancia2 = dist2(dx, dy, dz);
+    distancia2_im = dist2(dx_im, dy_im, dz_im);
     F = eval_LJ(distancia2, r_cut2);
+
+    // if (distancia2 != distancia2_im){
+    //     // printf("las dist no son iguales, i = %i, j = %i\n", i, j);
+    //     F_im = eval_LJ(distancia2_im, r_cut2);
+    // }
+    // else{
+    //   F_im = 0;
+    // }
+
     // printf("F = %f\n", F);
     // printf("fuerza ejercida sobre i = %i por j = %i es fuerza = %f \n", i, j, F);
-    fuerza_x[i] += F * (dx);
-    fuerza_y[i] += F * (dy);
-    fuerza_z[i] += F * (dz);
+    fuerza_x[i] += (F * (dx) + F_im * dx_im);
+    fuerza_y[i] += (F * (dy) + F_im * dy_im);
+    fuerza_z[i] += (F * (dz) + F_im * dz_im);
   }
   return 0;
 }
@@ -213,22 +253,40 @@ int kinetic_temperature(int n_part, int iter, float* vel_x, float* vel_y, float*
 int potential_energy(int n_part, int iter, float l, float* x, float* y, float* z, float r_cut2, float* potential){
 
   int i, j;
-  float dx, dy, dz;
-  float invr2, distancia2;
+  float dx, dy, dz, dx_im, dy_im, dz_im;
+  float invr2, distancia2, distancia2_im, invr2_im;
   float U = 0;
+  float U_im = 0;
   for (i = 0; i < n_part; i++) {
     for (j = 0; j < i; j++) {
-      dx = delta_coord(i, j, x, l);
-      dy = delta_coord(i, j, y, l);
-      dz = delta_coord(i, j, z, l);
+      dx = delta_posta(i, j, x, l);
+      dx_im = delta_coord(i, j, x, l);
+      dy = delta_posta(i, j, y, l);
+      dy_im = delta_coord(i, j, y, l);
+      dz = delta_posta(i, j, z, l);
+      dz_im = delta_coord(i, j, z, l);
+
       distancia2 = dist2(dx, dy, dz);
+      distancia2_im = dist2(dx_im, dy_im, dz_im);
       invr2 = 1./distancia2;
+      invr2_im = 1./distancia2_im;
+
       if (distancia2 < r_cut2) {
         U += 4 * pow(invr2,3) * ( pow(invr2,3) - 1. );
       }
+
+      // if (invr2 != invr2_im){
+      //   if (distancia2_im < r_cut2) {
+      //     U_im += 4 * pow(invr2_im,3) * ( pow(invr2_im,3) - 1. );
+      //   }
+      //   else{
+      //     U_im = 0;
+      //   }
+      // }
     }
   }
-  potential[iter] = U;
+  // printf("U_im es %f\n", U_im);
+  potential[iter] = U + U_im;
 
   return 0;
 }
