@@ -131,27 +131,27 @@ float eval_LJ(float dist2, float r_cut){      // sigma como macro? unidades redu
 
 int F_tot(int i, int n_part, float l, float* x, float* y, float* z, float r_cut2, float *fuerza_x, float *fuerza_y, float *fuerza_z){
   // vacia el array de fuerzas antes de calcular
-  fuerza_x[i] = 0;
-  fuerza_y[i] = 0;
-  fuerza_z[i] = 0;
+  // fuerza_x[i] = 0;
+  // fuerza_y[i] = 0;
+  // fuerza_z[i] = 0;
   float distancia2 = 0;
   float F = 0;
   int j;
   // suma para cada particula i, las fuerzas F_ij, que resulta en la F_i total
 
   float dx, dy, dz;
-  for (j = 0; j < i; j++) {
-    dx = delta_coord(i, j, x, l);
-    dy = delta_coord(i, j, y, l);
-    dz = delta_coord(i, j, z, l);
-    distancia2 = dist2(dx, dy, dz);
-    F = eval_LJ(distancia2, r_cut2);
-    // printf("F = %f\n", F);
-    // printf("fuerza ejercida sobre i = %i por j = %i es fuerza = %f \n", i, j, F);
-    fuerza_x[i] += F * (dx);
-    fuerza_y[i] += F * (dy);
-    fuerza_z[i] += F * (dz);
-  }
+  // for (j = 0; j < i; j++) {
+  //   dx = delta_coord(i, j, x, l);
+  //   dy = delta_coord(i, j, y, l);
+  //   dz = delta_coord(i, j, z, l);
+  //   distancia2 = dist2(dx, dy, dz);
+  //   F = eval_LJ(distancia2, r_cut2);
+  //   // printf("F = %f\n", F);
+  //   // printf("fuerza ejercida sobre i = %i por j = %i es fuerza = %f \n", i, j, F);
+  //   fuerza_x[i] += F * (dx);
+  //   fuerza_y[i] += F * (dy);
+  //   fuerza_z[i] += F * (dz);
+  // }
   // lo divide en rangos para evitar i=j
   for (j = i+1; j < n_part; j++) {
     dx = delta_coord(i, j, x, l);
@@ -164,9 +164,43 @@ int F_tot(int i, int n_part, float l, float* x, float* y, float* z, float r_cut2
     fuerza_x[i] += F * (dx);
     fuerza_y[i] += F * (dy);
     fuerza_z[i] += F * (dz);
+
+    fuerza_x[j] -= F * (dx);
+    fuerza_y[j] -= F * (dy);
+    fuerza_z[j] -= F * (dz);
   }
   return 0;
 }
+// esta lo hace segun el libro, todas a la vez, no hace falta iterarla
+int F_todas(int n_part, float l, float* x, float* y, float* z, float r_cut2, float *fuerza_x, float *fuerza_y, float *fuerza_z){
+
+  float distancia2 = 0;
+  float F = 0;
+  int i, j;
+
+  float dx, dy, dz;
+  for (i = 0; i < n_part-1; i++){
+    for (j = i+1; j < n_part; j++) {
+      dx = delta_coord(i, j, x, l);
+      dy = delta_coord(i, j, y, l);
+      dz = delta_coord(i, j, z, l);
+      distancia2 = dist2(dx, dy, dz);
+      F = eval_LJ(distancia2, r_cut2);
+      printf("fuerza del par i=%i, j=%i\n", i, j);
+      // printf("F = %f\n", F);
+      // printf("fuerza ejercida sobre i = %i por j = %i es fuerza = %f \n", i, j, F);
+      fuerza_x[i] += F * (dx);
+      fuerza_y[i] += F * (dy);
+      fuerza_z[i] += F * (dz);
+
+      fuerza_x[j] -= F * (dx);
+      fuerza_y[j] -= F * (dy);
+      fuerza_z[j] -= F * (dz);
+    }
+  }
+  return 0;
+}
+
 
 int time_evol(int n_part, float l, float paso, float paso2, float* pos_x_ant, float* pos_x_post,
               float* pos_y_ant, float* pos_y_post, float* pos_z_ant,
@@ -181,8 +215,15 @@ int time_evol(int n_part, float l, float paso, float paso2, float* pos_x_ant, fl
     adv_pos(n, pos_z_ant, pos_z_post, l, vel_z_ant, paso, paso2, fuerza_z_ant);
   }
   for (int n = 0; n < n_part; n++) {
-    F_tot(n, n_part, l, pos_x_post, pos_y_post, pos_z_post, r_cut2, fuerza_x_post, fuerza_y_post, fuerza_z_post);
+    fuerza_x_post[n] = 0;
+    fuerza_y_post[n] = 0;
+    fuerza_z_post[n] = 0;
   }
+  F_todas(n_part, l, pos_x_post, pos_y_post, pos_z_post, r_cut2, fuerza_x_post, fuerza_y_post, fuerza_z_post);
+
+  // for (int n = 0; n < n_part-1; n++) {
+  //   F_tot(n, n_part, l, pos_x_post, pos_y_post, pos_z_post, r_cut2, fuerza_x_post, fuerza_y_post, fuerza_z_post);
+  // }
   for (int n = 0; n < n_part; n++) {
     adv_vel(n, vel_x_ant, vel_x_post, paso, fuerza_x_ant, fuerza_x_post);
     adv_vel(n, vel_y_ant, vel_y_post, paso, fuerza_y_ant, fuerza_y_post);
@@ -216,8 +257,8 @@ int potential_energy(int n_part, int iter, float l, float* x, float* y, float* z
   float dx, dy, dz;
   float invr2, distancia2;
   float U = 0;
-  for (i = 0; i < n_part; i++) {
-    for (j = 0; j < i; j++) {
+  for (i = 0; i < n_part-1; i++) {
+    for (j = i+1; j < n_part; j++) {
       dx = delta_coord(i, j, x, l);
       dy = delta_coord(i, j, y, l);
       dz = delta_coord(i, j, z, l);

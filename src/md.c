@@ -5,7 +5,7 @@
 
 #define PASO 0.02
 #define PASO2 0.0002          // esto es paso al cuadrado sobre dos
-#define R_CUT2 100   // el posta es 6.25
+#define R_CUT2 6.25   // el posta es 6.25
 
 // pasos a seguir:
 // calcular la energia (chequear que sea cte)
@@ -58,9 +58,10 @@ int main(int argc, char **argv) {
 
   initizalize_pos(n_part, l, pos_x_ant, pos_y_ant, pos_z_ant);
   initizalize_vel(n_part, vel_x_ant, vel_y_ant, vel_z_ant, T);
-  for (int n = 0; n < n_part; n++) {
-    F_tot(n, n_part, l, pos_x_ant, pos_y_ant, pos_z_ant, R_CUT2, fuerza_x_ant, fuerza_y_ant, fuerza_z_ant);
-  }
+  F_todas(n_part, l, pos_x_ant, pos_y_ant, pos_z_ant, R_CUT2, fuerza_x_ant, fuerza_y_ant, fuerza_z_ant);
+  // for (int n = 0; n < n_part-1; n++) {
+  //   F_tot(n, n_part, l, pos_x_ant, pos_y_ant, pos_z_ant, R_CUT2, fuerza_x_ant, fuerza_y_ant, fuerza_z_ant);
+  // }
 
   kinetic_temperature(n_part, 0, vel_x_ant, vel_y_ant, vel_z_ant, temperature, kinetic);
   potential_energy(n_part, 0, l, pos_x_ant, pos_y_ant, pos_z_ant, R_CUT2, potential);
@@ -106,6 +107,12 @@ int main(int argc, char **argv) {
     kinetic_temperature(n_part, i, vel_x_post, vel_y_post, vel_z_post, temperature, kinetic);
     potential_energy(n_part, i, l, pos_x_post, pos_y_post, pos_z_post, R_CUT2, potential);
     total_energy(i, kinetic, potential, E_total);
+
+    // for (int n = 0; n < n_part; n++) {
+    //   printf("la fuerza_x sobre n=%i es %f \n", n, fuerza_x_post[n]);
+    //   printf("la fuerza_y sobre n=%i es %f \n", n, fuerza_y_post[n]);
+    //   printf("la fuerza_z sobre n=%i es %f \n", n, fuerza_z_post[n]);
+    // }
 
     printf("------------------------------------");
     printf("i = %i\n", i);
