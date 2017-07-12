@@ -8,7 +8,7 @@ LD_FLAGS = -lm
 
 SOURCE_C = $(wildcard *.c)					# todas las cosas que terminan en '.c'
 OBJECTS_C = $(patsubst %.c, %.o, $(SOURCE_C))
-EXECUTABLE = ../bin/md.e						# defino el ejecutable
+EXECUTABLE = ../bin/md.exe						# defino el ejecutable
 
 md: $(EXECUTABLE)
 
@@ -18,7 +18,7 @@ dynamics.o: dynamics.c							# target: dependencia
 # $@ = target
 # $^ = todas las dependencias
 
-../bin/md.e: dynamics.o md.c				# archivo: dependencias
+../bin/md.exe: dynamics.o md.c				# archivo: dependencias
 	$(LD) $^ $(LD_FLAGS) -o $@
 
 clean:

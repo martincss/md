@@ -13,6 +13,15 @@ int hola(){
   return 0;
 }
 
+int init_prueba_dos(float l, float* pos_x_ant, float* pos_y_ant, float* pos_z_ant){
+	float a = l/3.;
+	pos_x_ant[0] = a/6;
+	pos_y_ant[0] = a/6;
+	pos_z_ant[0] = a/6;
+	pos_x_ant[1] = 2.5*a;
+	pos_y_ant[1] = 2.5*a;
+	pos_z_ant[1] = 2.5*a;
+}
 
 // da valores iniciales a la posicion y velocidad de todas las part
 int initizalize_pos(int n_part, float l, float* pos_x_ant, float* pos_y_ant, float* pos_z_ant){
@@ -57,7 +66,35 @@ int initizalize_vel(int n_part, float* vel_x_ant, float* vel_y_ant, float* vel_z
     vel_y_ant[n] = gauss(T);
     vel_z_ant[n] = gauss(T);
   }
+  // les saca el valor medio..
+  float s_x = 0;
+  float s_y = 0;
+  float s_z = 0;
+  for (int n = 0; n < n_part; n++){
+	  s_x += vel_x_ant[n];
+	  s_y += vel_y_ant[n];
+	  s_z += vel_z_ant[n];
+  } 
+  for (int n = 0; n < n_part; n++){
+	  vel_x_ant[n] -= s_x/n_part;
+	  vel_y_ant[n] -= s_y/n_part;
+	  vel_z_ant[n] -= s_z/n_part;
+  } 
+  
   return 0;
+}
+
+int sum_vel(int n_part, float* vel_x, float* vel_y, float* vel_z){
+	float sum_x = 0;
+	float sum_y = 0; 
+	float sum_z = 0;
+	int i;
+	for (i = 0; i < n_part; i++){
+		sum_x += vel_x[i];
+		sum_y += vel_y[i];
+		sum_z += vel_z[i];
+	}
+	printf("las velocidades promedio son v_x = %f, v_y = %f, v_z = %f \n \n", sum_x/n_part, sum_y/n_part, sum_z/n_part);
 }
 
 // avanza la posicion de una particula dada la fuerza
@@ -131,9 +168,9 @@ float eval_LJ(float dist2, float r_cut){      // sigma como macro? unidades redu
 
 int F_tot(int i, int n_part, float l, float* x, float* y, float* z, float r_cut2, float *fuerza_x, float *fuerza_y, float *fuerza_z){
   // vacia el array de fuerzas antes de calcular
-  // fuerza_x[i] = 0;
-  // fuerza_y[i] = 0;
-  // fuerza_z[i] = 0;
+  fuerza_x[i] = 0;
+  fuerza_y[i] = 0;
+  fuerza_z[i] = 0;
   float distancia2 = 0;
   float F = 0;
   int j;
@@ -186,7 +223,7 @@ int F_todas(int n_part, float l, float* x, float* y, float* z, float r_cut2, flo
       dz = delta_coord(i, j, z, l);
       distancia2 = dist2(dx, dy, dz);
       F = eval_LJ(distancia2, r_cut2);
-      printf("fuerza del par i=%i, j=%i\n", i, j);
+      // printf("fuerza del par i=%i, j=%i\n", i, j);
       // printf("F = %f\n", F);
       // printf("fuerza ejercida sobre i = %i por j = %i es fuerza = %f \n", i, j, F);
       fuerza_x[i] += F * (dx);

@@ -16,9 +16,9 @@ int main(int argc, char **argv) {
 
   hola();
   // Inicializamos numero de particulas
-  int n_part = 27;
-  float l = 3;
-  int steps = 3;
+  int n_part = 2;
+  float l = 5;
+  int steps = 10;
   float T = 0.728;
   srand(time(NULL));
 
@@ -55,8 +55,8 @@ int main(int argc, char **argv) {
   float* fuerza_y_post = calloc(n_part, sizeof(float));
   float* fuerza_z_post = calloc(n_part, sizeof(float));
 
-
-  initizalize_pos(n_part, l, pos_x_ant, pos_y_ant, pos_z_ant);
+  init_prueba_dos(l, pos_x_ant, pos_y_ant, pos_z_ant);
+  // initizalize_pos(n_part, l, pos_x_ant, pos_y_ant, pos_z_ant);
   initizalize_vel(n_part, vel_x_ant, vel_y_ant, vel_z_ant, T);
   F_todas(n_part, l, pos_x_ant, pos_y_ant, pos_z_ant, R_CUT2, fuerza_x_ant, fuerza_y_ant, fuerza_z_ant);
   // for (int n = 0; n < n_part-1; n++) {
@@ -73,28 +73,12 @@ int main(int argc, char **argv) {
   printf("cinetica = %f, potencial = %f, total = %f\n", kinetic[0], potential[0], E_total[0]);
   printf("temperatura = %f\n", temperature[0]);
   printf("\n");
+  // sum_vel(n_part, vel_x_ant, vel_y_ant, vel_z_ant);
 
   int i;
   for (i = 0; i < steps; i++) {
 
-  // int k;
-  // for (k = 0; k < n_part; k++) {
-  //   printf("particula = %i,   ", k);
-  //   printf("\n");
-  //   printf("pos x es %f,    ", pos_x_ant[k]);
-  //   printf("vel x es %f,    ", vel_x_ant[k]);
-  //   printf("fuerza x es %f,    ", fuerza_x_ant[k]);
-  //   printf("\n");
-  //   printf("pos y es %f,    ", pos_y_ant[k]);
-  //   printf("vel y es %f,    ", vel_y_ant[k]);
-  //   printf("fuerza y es %f,    ", fuerza_y_ant[k]);
-  //   printf("\n");
-  //   printf("pos z es %f,    ", pos_z_ant[k]);
-  //   printf("vel z es %f,    ", vel_z_ant[k]);
-  //   printf("fuerza z es %f,    ", fuerza_z_ant[k]);
-  //   printf("\n");
-  //   printf("\n");
-  // }
+  
 
 
     time_evol(n_part, l, PASO, PASO2, pos_x_ant, pos_x_post,
@@ -116,11 +100,31 @@ int main(int argc, char **argv) {
 
     printf("------------------------------------");
     printf("i = %i\n", i);
+	
+	int k;
+  for (k = 0; k < n_part; k++) {
+    printf("particula = %i,   ", k);
+    printf("\n");
+    printf("pos x es %f,    ", pos_x_ant[k]);
+    printf("vel x es %f,    ", vel_x_ant[k]);
+    printf("fuerza x es %f,    ", fuerza_x_ant[k]);
+    printf("\n");
+    printf("pos y es %f,    ", pos_y_ant[k]);
+    printf("vel y es %f,    ", vel_y_ant[k]);
+    printf("fuerza y es %f,    ", fuerza_y_ant[k]);
+    printf("\n");
+    printf("pos z es %f,    ", pos_z_ant[k]);
+    printf("vel z es %f,    ", vel_z_ant[k]);
+    printf("fuerza z es %f,    ", fuerza_z_ant[k]);
+    printf("\n");
+    printf("\n");
+  }
+  
     printf("ENERGIAS\n");
     printf("cinetica = %f, potencial = %f, total = %f\n", kinetic[i], potential[i], E_total[i]);
     printf("temperatura = %f\n", temperature[i]);
     printf("\n");
-
+	// sum_vel(n_part, vel_x_post, vel_y_post, vel_z_post);
     //ahora las post son las nuevas ant
     int j;
     for (j = 0; j < n_part; j++) {
