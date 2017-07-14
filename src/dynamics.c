@@ -13,15 +13,7 @@ int hola(){
   return 0;
 }
 
-int init_prueba_dos(float l, float* pos_x_ant, float* pos_y_ant, float* pos_z_ant){
-	float a = l/3.;
-	pos_x_ant[0] = a/6;
-	pos_y_ant[0] = a/6;
-	pos_z_ant[0] = a/6;
-	pos_x_ant[1] = 2.5*a;
-	pos_y_ant[1] = 2.5*a;
-	pos_z_ant[1] = 2.5*a;
-}
+
 
 // da valores iniciales a la posicion y velocidad de todas las part
 int initizalize_pos(int n_part, float l, float* pos_x_ant, float* pos_y_ant, float* pos_z_ant){
@@ -149,6 +141,7 @@ float dist2(float dx, float dy, float dz){
 
 // calcula el factor de las fuerza (usando derivada de LJ) entre dos particulas
 // separadas por una distancia/ (distancia)^2 = dist2
+// le agrego el shift de fuerza para sualizar el cut_off, ver Haile ss. 5.1.2
 float eval_LJ(float dist2, float r_cut){      // sigma como macro? unidades reducidas?
   // float epsilon = 1;
   // float sigma = 1;
@@ -157,7 +150,9 @@ float eval_LJ(float dist2, float r_cut){      // sigma como macro? unidades redu
   float F = 0;
   if (dist2 < r_cut) {
     // F = 24 * epsilon * sigma6 * pow(invr2, 3) * (2 * sigma6 * pow(invr2, 4) - invr2);
-    F = 24 * pow(invr2, 3) * (2 * pow(invr2, 4) - invr2);
+    // F = 24 * pow(invr2, 3) * (2 * pow(invr2, 4) - invr2);
+	F = 24 * pow(invr2, 3) * (2 * pow(invr2, 4) - invr2) + 0.015599; // con el shift que es -F(r_cut)
+
   }
   // if (F>10000){
   //   printf("la fuerza se paso de 10000\n");
@@ -288,6 +283,7 @@ int kinetic_temperature(int n_part, int iter, float* vel_x, float* vel_y, float*
     return 0;
 }
 
+// le agrego el shift para suavizar el cut_off, ver Haile ss 5.1.2
 int potential_energy(int n_part, int iter, float l, float* x, float* y, float* z, float r_cut2, float* potential){
 
   int i, j;
@@ -302,7 +298,8 @@ int potential_energy(int n_part, int iter, float l, float* x, float* y, float* z
       distancia2 = dist2(dx, dy, dz);
       invr2 = 1./distancia2;
       if (distancia2 < r_cut2) {
-        U += 4 * pow(invr2,3) * ( pow(invr2,3) - 1. );
+        // U += 4 * pow(invr2,3) * ( pow(invr2,3) - 1. );
+		U += 4 * pow(invr2,3) * ( pow(invr2,3) - 1. ) + 0.0163 - (sqrt(distancia2)-2.5)*(-0.015599);
       }
     }
   }

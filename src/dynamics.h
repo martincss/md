@@ -1,7 +1,6 @@
 #ifndef DYNAMICS_H
 #define DYNAMICS_H
 int hola();
-int init_prueba_dos(float l, float* pos_x_ant, float* pos_y_ant, float* pos_z_ant);
 int initizalize_pos(int n_part, float l, float* pos_x_ant, float* pos_y_ant, float* pos_z_ant);
 float gauss(float T);
 int initizalize_vel(int n_part, float* vel_x_ant, float* vel_y_ant, float* vel_z_ant, float T);

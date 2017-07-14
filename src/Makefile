@@ -14,11 +14,14 @@ md: $(EXECUTABLE)
 
 dynamics.o: dynamics.c							# target: dependencia
 	$(CC) $(CFLAGS) -c $^ -o $@			# reglas de compilacion
+	
+pruebas_pos.o: pruebas_pos.c							# target: dependencia
+	$(CC) $(CFLAGS) -c $^ -o $@			# reglas de compilacion	
 
 # $@ = target
 # $^ = todas las dependencias
 
-../bin/md.exe: dynamics.o md.c				# archivo: dependencias
+../bin/md.exe: dynamics.o pruebas_pos.o md.c				# archivo: dependencias
 	$(LD) $^ $(LD_FLAGS) -o $@
 
 clean:
