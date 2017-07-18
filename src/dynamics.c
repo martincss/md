@@ -15,7 +15,7 @@ int hola(){
 
 
 
-// da valores iniciales a la posicion y velocidad de todas las part
+// da valores iniciales a la posicion de todas las part ubicadas en un retículo fcc
 int initizalize_pos(int n_part, float l, float* pos_x_ant, float* pos_y_ant, float* pos_z_ant){
   float a = l/pow(n_part, 1/3.);       // distancia entre particulas en fc del lado de la caja
   // printf("a = %f\n", a);
@@ -38,6 +38,8 @@ int initizalize_pos(int n_part, float l, float* pos_x_ant, float* pos_y_ant, flo
   return 0;
 }
 
+// genera numeros aleatorios con dist normal, con dispersión según la temperatura deseada
+
 float gauss(float T){                              // faltaria que dependa de sigma (mu = 0)
   float sigma_gauss2 = T;
   float delta = sqrt(1200*sigma_gauss2);
@@ -51,7 +53,8 @@ float gauss(float T){                              // faltaria que dependa de si
   return (s/100 -0.5) * delta;
 }
 
-
+// inicializa velocidades siguiendo una dist. gaussiana para cada componente, y les resta 
+// el valor medio, para evitar el movimiento neto
 int initizalize_vel(int n_part, float* vel_x_ant, float* vel_y_ant, float* vel_z_ant, float T){
   for (int n = 0; n < n_part; n++) {
     vel_x_ant[n] = gauss(T);
@@ -75,7 +78,7 @@ int initizalize_vel(int n_part, float* vel_x_ant, float* vel_y_ant, float* vel_z
   
   return 0;
 }
-
+// para verificar que no haya velocidad media no nula
 int sum_vel(int n_part, float* vel_x, float* vel_y, float* vel_z){
 	float sum_x = 0;
 	float sum_y = 0; 
@@ -122,6 +125,7 @@ int sign(float a, float b){
   }
 }
 
+// hace la delta de una coordenada entre la part. i y la imagen más cercana de la j (o la j misma)
 float delta_coord(int i, int j, float* coord, float l){
   float delta = coord[i] - coord[j];
   if (abs(delta) > 0.5 * l) {
@@ -130,7 +134,7 @@ float delta_coord(int i, int j, float* coord, float l){
   return delta;
 }
 
-// calcula la distancia entre dos particulas
+// calcula la distancia (al cuadrado) entre dos particulas dadas las deltas de cada coord
 float dist2(float dx, float dy, float dz){
   float r_ij = ( pow(dx,2) + pow(dy,2) + pow(dz,2) );
   if (r_ij == 0) {
@@ -142,14 +146,11 @@ float dist2(float dx, float dy, float dz){
 // calcula el factor de las fuerza (usando derivada de LJ) entre dos particulas
 // separadas por una distancia/ (distancia)^2 = dist2
 // le agrego el shift de fuerza para sualizar el cut_off, ver Haile ss. 5.1.2
-float eval_LJ(float dist2, float r_cut){      // sigma como macro? unidades reducidas?
-  // float epsilon = 1;
-  // float sigma = 1;
-  // float sigma6 = pow(sigma, 6);
+float eval_LJ(float dist2, float r_cut){     
+  
   float invr2 = 1./dist2;
   float F = 0;
   if (dist2 < r_cut) {
-    // F = 24 * epsilon * sigma6 * pow(invr2, 3) * (2 * sigma6 * pow(invr2, 4) - invr2);
     // F = 24 * pow(invr2, 3) * (2 * pow(invr2, 4) - invr2);
 	F = 24 * pow(invr2, 3) * (2 * pow(invr2, 4) - invr2) + 0.015599; // con el shift que es -F(r_cut)
 
@@ -160,7 +161,7 @@ float eval_LJ(float dist2, float r_cut){      // sigma como macro? unidades redu
   return F;
 }
 
-
+// calcula todas las fuerzas sobre la particula i, (ya no la usamos)
 int F_tot(int i, int n_part, float l, float* x, float* y, float* z, float r_cut2, float *fuerza_x, float *fuerza_y, float *fuerza_z){
   // vacia el array de fuerzas antes de calcular
   fuerza_x[i] = 0;
@@ -203,6 +204,8 @@ int F_tot(int i, int n_part, float l, float* x, float* y, float* z, float r_cut2
   }
   return 0;
 }
+
+// calcula todas las fuerzas sobre todas las partículas a la vez
 // esta lo hace segun el libro, todas a la vez, no hace falta iterarla
 int F_todas(int n_part, float l, float* x, float* y, float* z, float r_cut2, float *fuerza_x, float *fuerza_y, float *fuerza_z){
 
@@ -233,7 +236,7 @@ int F_todas(int n_part, float l, float* x, float* y, float* z, float r_cut2, flo
   return 0;
 }
 
-
+// genera la evolución temporal de un paso, actualizando secunecialmente posiciones, fuerzas y velocidades
 int time_evol(int n_part, float l, float paso, float paso2, float* pos_x_ant, float* pos_x_post,
               float* pos_y_ant, float* pos_y_post, float* pos_z_ant,
               float* pos_z_post, float* vel_x_ant, float* vel_x_post,
@@ -283,6 +286,7 @@ int kinetic_temperature(int n_part, int iter, float* vel_x, float* vel_y, float*
     return 0;
 }
 
+// calcula la energía potencial para todas las partículas
 // le agrego el shift para suavizar el cut_off, ver Haile ss 5.1.2
 int potential_energy(int n_part, int iter, float l, float* x, float* y, float* z, float r_cut2, float* potential){
 
@@ -308,6 +312,7 @@ int potential_energy(int n_part, int iter, float l, float* x, float* y, float* z
   return 0;
 }
 
+// calcula la energia total a partir de las otras
 int total_energy(int iter, float* kinetic, float* potential, float* total){
 
   total[iter] = kinetic[iter] + potential[iter];

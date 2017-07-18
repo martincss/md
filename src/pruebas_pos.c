@@ -9,12 +9,12 @@
 
 int init_prueba_dos(float l, float* pos_x_ant, float* pos_y_ant, float* pos_z_ant){
 	float a = l/3.;
-	pos_x_ant[0] = a/6;
-	pos_y_ant[0] = a/6;
-	pos_z_ant[0] = a/6;
-	pos_x_ant[1] = 2.5*a;
-	pos_y_ant[1] = 2.5*a;
-	pos_z_ant[1] = 2.5*a;
+	pos_x_ant[0] = a;
+	pos_y_ant[0] = a;
+	pos_z_ant[0] = a;
+	pos_x_ant[1] = 2*a;
+	pos_y_ant[1] = 2*a;
+	pos_z_ant[1] = 2*a;
 }
 
 int init_prueba_tres(float l, float* pos_x_ant, float* pos_y_ant, float* pos_z_ant){
