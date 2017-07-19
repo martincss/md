@@ -53,7 +53,7 @@ float gauss(float T){                              // faltaria que dependa de si
   return (s/100 -0.5) * delta;
 }
 
-// inicializa velocidades siguiendo una dist. gaussiana para cada componente, y les resta 
+// inicializa velocidades siguiendo una dist. gaussiana para cada componente, y les resta
 // el valor medio, para evitar el movimiento neto
 int initizalize_vel(int n_part, float* vel_x_ant, float* vel_y_ant, float* vel_z_ant, float T){
   for (int n = 0; n < n_part; n++) {
@@ -69,19 +69,19 @@ int initizalize_vel(int n_part, float* vel_x_ant, float* vel_y_ant, float* vel_z
 	  s_x += vel_x_ant[n];
 	  s_y += vel_y_ant[n];
 	  s_z += vel_z_ant[n];
-  } 
+  }
   for (int n = 0; n < n_part; n++){
 	  vel_x_ant[n] -= s_x/n_part;
 	  vel_y_ant[n] -= s_y/n_part;
 	  vel_z_ant[n] -= s_z/n_part;
-  } 
-  
+  }
+
   return 0;
 }
 // para verificar que no haya velocidad media no nula
 int sum_vel(int n_part, float* vel_x, float* vel_y, float* vel_z){
 	float sum_x = 0;
-	float sum_y = 0; 
+	float sum_y = 0;
 	float sum_z = 0;
 	int i;
 	for (i = 0; i < n_part; i++){
@@ -146,8 +146,8 @@ float dist2(float dx, float dy, float dz){
 // calcula el factor de las fuerza (usando derivada de LJ) entre dos particulas
 // separadas por una distancia/ (distancia)^2 = dist2
 // le agrego el shift de fuerza para sualizar el cut_off, ver Haile ss. 5.1.2
-float eval_LJ(float dist2, float r_cut){     
-  
+float eval_LJ(float dist2, float r_cut){
+
   float invr2 = 1./dist2;
   float F = 0;
   if (dist2 < r_cut) {
@@ -318,4 +318,31 @@ int total_energy(int iter, float* kinetic, float* potential, float* total){
   total[iter] = kinetic[iter] + potential[iter];
 
   return 0;
+}
+
+int delta_N(float l, float r, float delta_r, int n_part, float* x, float* y, float* z){
+  int i;
+  float distancia2;
+  int n = 0;
+  for (i = 0; i < n_part; i++) {
+    distancia2 = dist2(x[i] - l/2, y[i] - l/2, z[i] - l/2);
+    if (distancia2 < pow(r + delta_r, 2) && distancia2 > pow(r, 2)) {
+        n++;
+    }
+  }
+  return n;
+}
+
+float delta_vol(float r, float delta_r){
+  float volumen;
+  volumen = (4/3.) * 3.14 * (pow(r + delta_r, 3) - pow(r, 3));
+  return volumen;
+}
+
+float g(float rho, float l, float r, float delta_r, int n_part, float* x, float* y, float* z){
+  float volumen = delta_vol(r, delta_r);
+  int N = delta_N( l, r, delta_r, n_part, x, y, z);
+  float g = N/(0.5 * n_part * rho * volumen);
+  printf("g = %f\n", g);
+  return g;
 }

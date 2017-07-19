@@ -23,4 +23,7 @@ int time_evol(int n_part, float l, float paso, float paso2, float* pos_x_ant, fl
 int kinetic_temperature(int n_part, int iter, float* vel_x, float* vel_y, float* vel_z, float* temp, float* kinetic);
 int potential_energy(int n_part, int iter, float l, float* x, float* y, float* z, float r_cut2, float* potential);
 int total_energy(int iter, float* kinetic, float* potential, float* total);
+int delta_N(float l, float r, float delta_r, int n_part, float* x, float* y, float* z);
+float delta_vol(float r, float delta_r);
+float g(float rho, float l, float r, float delta_r, int n_part, float* x, float* y, float* z);
 #endif
