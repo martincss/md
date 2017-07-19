@@ -175,8 +175,8 @@ int main(int argc, char **argv) {
 
   float r = 0.2;
   float delta_r = 3;
-  float dist_radial;
-  dist_radial = g(rho, l, r, delta_r, n_part, pos_x_post, pos_y_post, pos_z_post);
+  float distribucion_radial;
+  distribucion_radial = g(rho, l, r, delta_r, n_part, pos_x_post, pos_y_post, pos_z_post);
   }
 
   free(pos_x_ant);
