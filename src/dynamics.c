@@ -20,10 +20,10 @@ int initizalize_pos(int n_part, float l, float* pos_x_ant, float* pos_y_ant, flo
   float a = l/pow(n_part, 1/3.);       // distancia entre particulas en fc del lado de la caja
   // printf("a = %f\n", a);
   int n = 0;
-  float b = pow(n_part, 1/3.) - 0.5;
-  for (int i = 0; i < b; i++) {
-    for (int j = 0; j < b; j++) {
-      for (int k = 0; k < b; k++) {
+  float b = pow(n_part, 1/3.) - 1;
+  for (int i = 0; i <= b; i++) {
+    for (int j = 0; j <= b; j++) {
+      for (int k = 0; k <= b; k++) {
         pos_x_ant[n] = a/2 + i*a;
         // printf("pos_x_ant(%i) = %f\n", n, pos_x_ant[n]);
         pos_y_ant[n] = a/2 + j*a;
@@ -128,9 +128,11 @@ int sign(float a, float b){
 // hace la delta de una coordenada entre la part. i y la imagen más cercana de la j (o la j misma)
 float delta_coord(int i, int j, float* coord, float l){
   float delta = coord[i] - coord[j];
-  if (abs(delta) > 0.5 * l) {
-    delta = delta - sign(l, delta);
-  }
+  while (delta > l/2) delta -= l;
+  while (delta < -l/2) delta += l;
+  // if (abs(delta) > 0.5 * l) {
+  //   delta = delta - sign(l, delta);
+  // }
   return delta;
 }
 
