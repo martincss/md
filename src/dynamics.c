@@ -153,13 +153,14 @@ float eval_LJ(float dist2, float r_cut){
   float invr2 = 1./dist2;
   float F = 0;
   if (dist2 < r_cut) {
-    // F = 24 * pow(invr2, 3) * (2 * pow(invr2, 4) - invr2);
-	F = 24 * pow(invr2, 3) * (2 * pow(invr2, 4) - invr2) + 0.015599; // con el shift que es -F(r_cut)
+    F = 24 * pow(invr2, 3) * (2 * pow(invr2, 4) - invr2);
+	F -= 24 * pow(r_cut, -3) * (2 * pow(r_cut, -4) - 1/r_cut);
+	// F = 24 * pow(invr2, 3) * (2 * pow(invr2, 4) - invr2) + 0.015599; // con el shift que es -F(r_cut)
 
   }
-  // if (F>10000){
-  //   printf("la fuerza se paso de 10000\n");
-  // }
+  if (F>10000){
+    printf("la fuerza se paso de 10000\n");
+  }
   return F;
 }
 
@@ -321,6 +322,35 @@ int total_energy(int iter, float* kinetic, float* potential, float* total){
 
   return 0;
 }
+
+// hace el rescaling de velocidades para cambiar la temperatura
+int rescaling(float T_inicial, float T_final, int n_part, float* vel_x, float* vel_y, float* vel_z){
+	float scale = sqrt(T_final/T_inicial);
+	int i;
+	for (i = 0; i < n_part; i++){
+		vel_x[i] *= scale;
+		vel_y[i] *= scale;
+		vel_z[i] *= scale;
+	}
+	
+	// por las dudas les saca el valor medio..
+	float s_x = 0;
+	float s_y = 0;
+	float s_z = 0;
+	for (int n = 0; n < n_part; n++){
+		s_x += vel_x[n];
+		s_y += vel_y[n];
+		s_z += vel_z[n];
+	}
+	for (int n = 0; n < n_part; n++){
+		vel_x[n] -= s_x/n_part;
+		vel_y[n] -= s_y/n_part;
+		vel_z[n] -= s_z/n_part;
+	}
+	
+	return 0;
+}
+
 
 int delta_N(float l, float r, float delta_r, int n_part, float* x, float* y, float* z){
   int i;
