@@ -39,10 +39,9 @@ int initizalize_pos(int n_part, float l, float* pos_x_ant, float* pos_y_ant, flo
 }
 
 // genera numeros aleatorios con dist normal, con dispersión según la temperatura deseada
-
-float gauss(float T){                              // faltaria que dependa de sigma (mu = 0)
-  float sigma_gauss2 = T;
-  float delta = sqrt(1200*sigma_gauss2);
+float gauss(){                              // faltaria que dependa de sigma (mu = 0)
+  // float sigma_gauss2 = T;
+  // float delta = sqrt(1200*sigma_gauss2);
   // printf("delta = %f\n", delta);
   float s = 0;
   for (int i = 0; i < 100; i++) {
@@ -50,7 +49,7 @@ float gauss(float T){                              // faltaria que dependa de si
   }
   // printf("gauss() = %f\n", (s/100 -0.5));
   // printf("gauss = %f\n", (s/100 -0.5) * delta);
-  return (s/100 -0.5) * delta;
+  return (s/100 -0.5);
 }
 
 // inicializa velocidades siguiendo una dist. gaussiana para cada componente, y les resta
@@ -75,6 +74,21 @@ int initizalize_vel(int n_part, float* vel_x_ant, float* vel_y_ant, float* vel_z
 	  vel_y_ant[n] -= s_y/n_part;
 	  vel_z_ant[n] -= s_z/n_part;
   }
+
+  // calcula la temperatura
+  float T_act = 0;
+  for (int n = 0; n < n_part; n++) {
+    T_act += vel_x_ant[n]*vel_x_ant[n] + vel_y_ant[n]*vel_y_ant[n] + vel_z_ant[n]*vel_z_ant[n];
+  }
+  T_act /= 3*n_part;
+
+  // rescaling para lograr la deseada
+  for (int n = 0; n < n_part; n++){
+	  vel_x_ant[n] *= sqrt(T/T_act);
+	  vel_y_ant[n] *= sqrt(T/T_act);
+	  vel_z_ant[n] *= sqrt(T/T_act);
+  }
+
 
   return 0;
 }
@@ -142,7 +156,10 @@ float dist2(float dx, float dy, float dz){
   if (r_ij == 0) {
     printf("se evito que la distancia fuese nula\n");
   }
-  return r_ij + 0.000001; // para evitar que sea cero, ver el orden de la correccion
+  if (r_ij < 1){
+    ;//printf("========================================== DIST MAS CHICA QUE UNO\n");
+  }
+  return r_ij;// + 0.000001; // para evitar que sea cero, ver el orden de la correccion
 }
 
 // calcula el factor de las fuerza (usando derivada de LJ) entre dos particulas
@@ -154,7 +171,7 @@ float eval_LJ(float dist2, float r_cut){
   float F = 0;
   if (dist2 < r_cut) {
     F = 24 * pow(invr2, 3) * (2 * pow(invr2, 4) - invr2);
-	F -= 24 * pow(r_cut, -3) * (2 * pow(r_cut, -4) - 1/r_cut);
+	//F -= 24 * pow(r_cut, -3) * (2 * pow(r_cut, -4) - 1/r_cut);
 	// F = 24 * pow(invr2, 3) * (2 * pow(invr2, 4) - invr2) + 0.015599; // con el shift que es -F(r_cut)
 
   }
@@ -273,8 +290,8 @@ int time_evol(int n_part, float l, float paso, float paso2, float* pos_x_ant, fl
 
 // calcula la temperatura a partir del valor medio de la energia cinetica
 // y tambien la energia cinetica, y guarda ambas en pointers
-int kinetic_temperature(int n_part, int iter, float* vel_x, float* vel_y, float* vel_z,
-                        float* temp, float* kinetic){
+int kinetic_energy(int n_part, int iter, float* vel_x, float* vel_y, float* vel_z,
+                        float* kinetic){
 
     float KE = 0;
     // calcula la energia cinetica total (KE)
@@ -283,7 +300,7 @@ int kinetic_temperature(int n_part, int iter, float* vel_x, float* vel_y, float*
     }
     KE = KE/2;
 
-    temp[iter] = (2./3.)*KE/n_part;
+    // temp[iter] = (2./3.)*KE/n_part;
     kinetic[iter] = KE;
 
     return 0;
@@ -305,8 +322,9 @@ int potential_energy(int n_part, int iter, float l, float* x, float* y, float* z
       distancia2 = dist2(dx, dy, dz);
       invr2 = 1./distancia2;
       if (distancia2 < r_cut2) {
-        // U += 4 * pow(invr2,3) * ( pow(invr2,3) - 1. );
-		U += 4 * pow(invr2,3) * ( pow(invr2,3) - 1. ) + 0.0163 - (sqrt(distancia2)-2.5)*(-0.015599);
+        U += 4 * pow(invr2,3) * ( pow(invr2,3) - 1. );
+        U -= 4 * pow(1/r_cut2,3) * ( pow(1/r_cut2,3) - 1. );
+		    //U += 4 * pow(invr2,3) * ( pow(invr2,3) - 1. ) + 0.0163 - (sqrt(distancia2)-2.5)*(-0.015599);
       }
     }
   }
@@ -332,7 +350,7 @@ int rescaling(float T_inicial, float T_final, int n_part, float* vel_x, float* v
 		vel_y[i] *= scale;
 		vel_z[i] *= scale;
 	}
-	
+
 	// por las dudas les saca el valor medio..
 	float s_x = 0;
 	float s_y = 0;
@@ -347,7 +365,7 @@ int rescaling(float T_inicial, float T_final, int n_part, float* vel_x, float* v
 		vel_y[n] -= s_y/n_part;
 		vel_z[n] -= s_z/n_part;
 	}
-	
+
 	return 0;
 }
 
