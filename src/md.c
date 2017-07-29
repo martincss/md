@@ -71,7 +71,7 @@ int main(int argc, char **argv) {
   kinetic_energy(n_part, 0, vel_x_ant, vel_y_ant, vel_z_ant, kinetic);
   potential_energy(n_part, 0, l, pos_x_ant, pos_y_ant, pos_z_ant, R_CUT2, potential);
   total_energy(0, kinetic, potential, E_total);
-  
+
   printf("------------------------------------");
   printf("INICIAL\n");
   int k;
@@ -112,7 +112,7 @@ int main(int argc, char **argv) {
               vel_z_post, fuerza_x_ant, fuerza_x_post,
               fuerza_y_ant, fuerza_y_post, fuerza_z_ant,
               fuerza_z_post, R_CUT2);
-	kinetic_energy(n_part, i, vel_x_post, vel_y_post, vel_z_post, kinetic);
+	  kinetic_energy(n_part, i, vel_x_post, vel_y_post, vel_z_post, kinetic);
     potential_energy(n_part, i, l, pos_x_post, pos_y_post, pos_z_post, R_CUT2, potential);
     total_energy(i, kinetic, potential, E_total);
 

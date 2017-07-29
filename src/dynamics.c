@@ -393,6 +393,6 @@ float g(float rho, float l, float r, float delta_r, int n_part, float* x, float*
   float volumen = delta_vol(r, delta_r);
   int N = delta_N( l, r, delta_r, n_part, x, y, z);
   float g = N/(0.5 * n_part * rho * volumen);
-  printf("g = %f\n", g);
+  // printf("g = %f\n", g);
   return g;
 }

@@ -4,8 +4,8 @@
 #include "dynamics.h"
 #include <math.h>
 
-#define PASO 0.01
-#define PASO2 0.00005          // esto es paso al cuadrado sobre dos
+#define PASO 0.0001
+#define PASO2 0.000000005          // esto es paso al cuadrado sobre dos
 #define R_CUT2 6.25   // el posta es 6.25
 
 // pasos a seguir:
@@ -15,8 +15,8 @@
 int main(int argc, char **argv) {
 
   FILE *fdat;
-  fdat = fopen("../data/md_1a.csv", "w");
-  fprintf(fdat, "i  K  U  E\n");
+  fdat = fopen("../data/md_1a_paso_1e-4.csv", "w");
+  fprintf(fdat, "K  U  E\n");
   // Inicializamos numero de particulas
   int n_part = 512;
   float rho = 0.8442; // la posta es 0.8442;
