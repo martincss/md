@@ -15,7 +15,7 @@
 int main(int argc, char **argv) {
 
   FILE *fdat;
-  fdat = fopen("../data/md_3_prueba.csv", "w");
+  fdat = fopen("../data/md_3_prueba_posta_3.csv", "w");
   fprintf(fdat, "r  g1  g2  g3\n");
   // Inicializamos numero de particulas
   int n_part = 512;
@@ -23,7 +23,7 @@ int main(int argc, char **argv) {
   float l;
   l = pow((float)n_part/rho, 1./3.);
   int steps_term = 4000;
-  int tiempo_desc = 1200;
+  int tiempo_desc = 500;
   float temp_inicial = 1.5;
   srand(time(NULL));
 
@@ -67,8 +67,16 @@ int main(int argc, char **argv) {
   float* fuerza_y_post = calloc(n_part, sizeof(float));
   float* fuerza_z_post = calloc(n_part, sizeof(float));
 
+  rho = 0.4;
   for (int r = 0; r < 3; r++) {
-    rho += 0.2*r;
+    rho += 0.2;
+	l = pow((float)n_part/rho, 1./3.);
+
+	// vacía el g_sample
+	for(int a = 0; a < particiones_r*cant_sample; a++){
+		g_sample[a] = 0;
+	}
+	
     printf("========================================== RHO = %f\n", rho);
     // inicializamos posiciones, velocidades y fuerzas
     initizalize_pos(n_part, l, pos_x_ant, pos_y_ant, pos_z_ant);
@@ -136,10 +144,11 @@ int main(int argc, char **argv) {
 
       // cuando el tiempo es multiplo del tiempo de sampleo, calcula la g para todos los r
       if (i % tiempo_desc == 0) {
-        printf("dato tomado para %i de %i con rho = %f\n", i/(tiempo_desc), cant_sample, rho);
-        for (int k = 0; k < particiones_r; k++) {
-          g_sample[ (i/tiempo_desc)*particiones_r + k ] = g(rho, l, radios[k], delta_r, n_part, pos_x_post, pos_y_post, pos_z_post);
-        }
+        printf("dato tomado para %i de %i con rho = %f\n", i/(tiempo_desc)+1, cant_sample, rho);
+        // for (int k = 0; k < particiones_r; k++) {
+          // g_sample[ (i/tiempo_desc)*particiones_r + k ] = g(rho, l, radios[k], delta_r, n_part, pos_x_post, pos_y_post, pos_z_post);
+        // }
+		g_posta(delta_r, l, rho, n_part, radios, g_sample, (i/tiempo_desc)*particiones_r, pos_x_post, pos_y_post, pos_z_post);
       }
 
     }
@@ -158,7 +167,8 @@ int main(int argc, char **argv) {
     printf("r = %f g_1 = %f, g_2 = %f, g_3 = %f\n", radios[k], g_prom[k], g_prom[k + particiones_r], g_prom[k + 2*particiones_r]);
     fprintf(fdat, "%.3g,%.6g,%.6g,%.6g\n", radios[k], g_prom[k], g_prom[k + particiones_r], g_prom[k + 2*particiones_r]);
   }
-
+  fflush(fdat);
+  fclose(fdat);
 
   free(pos_x_ant);
   free(pos_x_post);

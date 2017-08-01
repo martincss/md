@@ -396,3 +396,39 @@ float g(float rho, float l, float r, float delta_r, int n_part, float* x, float*
   // printf("g = %f\n", g);
   return g;
 }
+
+float g_posta(float delta_r, float l, float rho, int n_part, float* r, float* g, int pos_inicial_g, float* x, float* y, float* z){
+	int i, j;
+	float dx, dy, dz, distancia;
+	int k;
+	
+	for(i = 0; i < n_part-1; i++){
+		for(j = i+1; j < n_part; j++){
+			dx = delta_coord(i, j, x, l);
+			dy = delta_coord(i, j, y, l);
+			dz = delta_coord(i, j, z, l);
+			distancia = pow(dist2(dx, dy, dz),0.5);
+			k = (int) (distancia/delta_r);
+			g[pos_inicial_g + k] += 2; 
+			/*
+			esto es para que la g(r) calculada corresponda a la iteracion actual
+			en el main, aplicamos esta funcion sobre g_sample, con pos_inicial_g 
+			como (i/tiempo_desc)*particiones_r
+			*/
+		}							   		
+	}
+	// ahora para obtener la g de verdad, divido esa cant de particulas por el volumen de la cascara y etc...
+	float volumen;
+	for(int l = 0; l < (int)(l*0.5/delta_r); l++){
+		volumen = delta_vol(r[l], delta_r);
+		g[pos_inicial_g + l] /= (0.5 * n_part * rho * volumen);
+	}
+	
+}
+
+
+
+
+
+
+
