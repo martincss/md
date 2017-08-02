@@ -26,5 +26,5 @@ int total_energy(int iter, float* kinetic, float* potential, float* total);
 int delta_N(float l, float r, float delta_r, int n_part, float* x, float* y, float* z);
 float delta_vol(float r, float delta_r);
 float g(float rho, float l, float r, float delta_r, int n_part, float* x, float* y, float* z);
-float g_posta(float delta_r, float l, float rho, int n_part, float* r, float* g, int pos_inicial_g, float* x, float* y, float* z);
+float g_posta(float delta_r, int particiones_r, float l, float rho, int n_part, float* r, float* g, float* x, float* y, float* z);
 #endif

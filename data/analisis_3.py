@@ -4,13 +4,14 @@ from __future__ import division
 import numpy as np
 import matplotlib.pyplot as plt
 
-datos = np.loadtxt('md_3_prueba_posta_3.csv', delimiter=',', skiprows=1)
+datos = np.loadtxt('md_3_prueba_512_seis_rhos_mejor.csv', delimiter=',', skiprows=1)
+cant_rho = 6
+rho = [0.4, 0.6, 0.8, 1.0, 1.2, 1.4]
 
 r = datos[:,0]
-g_1 = datos[:,1]
-g_2 = datos[:,2]
-g_3 = datos[:,3]
 
 plt.figure()
-plt.plot(r, g_1, 'r', r, g_2, 'b', r, g_3, 'g')
+for i in range(cant_rho):
+    plt.plot(r, datos[:,i+1]/2, label = 'rho = %f' % rho[i])
+plt.legend()
 plt.show()
