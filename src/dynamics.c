@@ -306,6 +306,17 @@ int kinetic_energy(int n_part, int iter, float* vel_x, float* vel_y, float* vel_
     return 0;
 }
 
+float temperature(int n_part, float* vel_x, float* vel_y, float* vel_z){
+    float T;
+    float KE = 0;
+    for (int i = 0; i < n_part; i++) {
+        KE += (vel_x[i]*vel_x[i] + vel_y[i]*vel_y[i] + vel_z[i]*vel_z[i]);
+    }
+    KE /= 2;
+    T = (2./3.)*KE/n_part;
+    return T;
+}
+
 // calcula la energía potencial para todas las partículas
 // le agrego el shift para suavizar el cut_off, ver Haile ss 5.1.2
 int potential_energy(int n_part, int iter, float l, float* x, float* y, float* z, float r_cut2, float* potential){
@@ -403,7 +414,7 @@ float g_posta(float delta_r, int particiones_r, float l, float rho, int n_part, 
 	int k;
 	/*
 	Recorre todos los pares de partículas y calcula su distancia. Expresa ésta como
-	un múltiplo del dr, y le suma dos a la g(r) que corresponde a dicha distancia 
+	un múltiplo del dr, y le suma dos a la g(r) que corresponde a dicha distancia
 	(por la contribución del par de partículas)
 	*/
 	for(i = 0; i < n_part-1; i++){
@@ -414,10 +425,10 @@ float g_posta(float delta_r, int particiones_r, float l, float rho, int n_part, 
 			distancia = sqrt(dist2(dx, dy, dz));
 			k = (int) (distancia/delta_r);
 			if (distancia < 0.5*l){
-			g[k] += 2; 
+			g[k] += 2;
 			}
-			
-		}							   		
+
+		}
 	}
 	// ahora para obtener la g de verdad, divido esa cant de particulas por el volumen de la cascara y etc...
 	float volumen;
@@ -425,12 +436,27 @@ float g_posta(float delta_r, int particiones_r, float l, float rho, int n_part, 
 		volumen = delta_vol(r[k], delta_r);
 		g[k] /= (0.5 * n_part * rho * volumen);
 	}
-	
+
 }
 
-
-
-
-
-
-
+float pressure(int n_part, float l, float rho, float* x, float* y, float* z, float r_cut2, float temperature){
+  int i, j;
+  float dx, dy, dz;
+  float invr2, distancia2;
+  float w = 0;
+  float P = 0;
+  for (i = 0; i < n_part-1; i++) {
+    for (j = i+1; j < n_part; j++) {
+      dx = delta_coord(i, j, x, l);
+      dy = delta_coord(i, j, y, l);
+      dz = delta_coord(i, j, z, l);
+      distancia2 = dist2(dx, dy, dz);
+      invr2 = 1./distancia2;
+      if (distancia2 < r_cut2) {
+          w += 48*(pow(invr2,3) - 0.5)*pow(invr2,3);
+      }
+    }
+  }
+  P = rho*(temperature + w/(3*n_part));
+  return P;
+}

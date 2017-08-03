@@ -21,10 +21,13 @@ int time_evol(int n_part, float l, float paso, float paso2, float* pos_x_ant, fl
               float* fuerza_y_ant, float* fuerza_y_post, float* fuerza_z_ant,
               float* fuerza_z_post, float r_cut2);
 int kinetic_energy(int n_part, int iter, float* vel_x, float* vel_y, float* vel_z, float* kinetic);
+float temperature(int n_part, float* vel_x, float* vel_y, float* vel_z);
 int potential_energy(int n_part, int iter, float l, float* x, float* y, float* z, float r_cut2, float* potential);
 int total_energy(int iter, float* kinetic, float* potential, float* total);
+int rescaling(float T_inicial, float T_final, int n_part, float* vel_x, float* vel_y, float* vel_z);
 int delta_N(float l, float r, float delta_r, int n_part, float* x, float* y, float* z);
 float delta_vol(float r, float delta_r);
 float g(float rho, float l, float r, float delta_r, int n_part, float* x, float* y, float* z);
 float g_posta(float delta_r, int particiones_r, float l, float rho, int n_part, float* r, float* g, float* x, float* y, float* z);
+float pressure(int n_part, float l, float rho, float* x, float* y, float* z, float r_cut2, float temperature);
 #endif
