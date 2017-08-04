@@ -454,6 +454,9 @@ float pressure(int n_part, float l, float rho, float* x, float* y, float* z, flo
       invr2 = 1./distancia2;
       if (distancia2 < r_cut2) {
           w += 48*(pow(invr2,3) - 0.5)*pow(invr2,3);
+          if (w > 0) {
+            // printf("con distancia2 = %f, tengo w negativo\n", distancia2);
+          }
       }
     }
   }
