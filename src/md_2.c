@@ -26,9 +26,9 @@ int main(int argc, char **argv) {
   float temp_inicial = 2.0;
   float temp_final = 0.4;
 
-  int cant_rho = 10;							// cantidad de densidades
-  int cant_temps = 2;           // cantidad de temperaturas
-  int cant_sample = 1;					// cantidad de samples MENOS UNO (por como se da el loop)
+  int cant_rho = 5;							// cantidad de densidades
+  int cant_temps = 10;           // cantidad de temperaturas
+  int cant_sample = 10;					// cantidad de samples MENOS UNO (por como se da el loop)
 
   float incr_temp = (temp_inicial - temp_final)/(cant_temps-1);
   float incr_rho = (rho_final - rho_inicial)/(cant_rho-1);
