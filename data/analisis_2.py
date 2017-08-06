@@ -28,13 +28,36 @@ for i in range(cant_rhos):
     for j in range(cant_temps):
         energia[i,j] = E[i*cant_temps + j]
         presion[i,j] = P[i*cant_temps + j]
-        
+
+#%%
+
 plt.figure()
 for i in range(cant_temps):
     plt.subplot(1,2,1)
-    plt.plot(list_rhos, energia[:,i])
+    plt.plot(list_rhos, energia[:,i], label = 'T = %.2f' % list_temps[i])
     plt.subplot(1,2,2)
-    plt.plot(list_rhos, presion[:,i])
+    plt.scatter(list_rhos, presion[:,i], label = 'T = %.2f' % list_temps[i])
+plt.subplot(1,2,1)
+plt.grid(True)
+plt.xlabel('$\\rho$', fontsize = 15)
+plt.ylabel('Energía', fontsize = 15)
+plt.title('Energía en función de la densidad', fontsize = 20)
+ax = plt.gca()
+ax.set_xticklabels(ax.get_xticks(), fontsize = 15)
+ax.set_yticklabels(ax.get_yticks(), fontsize = 15)
+plt.legend()
+
+plt.subplot(1,2,2)
+plt.grid(True)
+plt.xlabel('$\\rho$', fontsize = 15)
+plt.ylabel('Presión', fontsize = 15)
+plt.title('Presión en función de la densidad', fontsize = 20)
+ax = plt.gca()
+ax.set_xticklabels(ax.get_xticks(), fontsize = 15)
+ax.set_yticklabels(ax.get_yticks(), fontsize = 15)
+plt.legend()
+
+#%%
 
 plt.figure()
 for i in range(cant_rhos):
@@ -42,4 +65,23 @@ for i in range(cant_rhos):
     plt.plot(list_temps, energia[i,:])
     plt.subplot(1,2,2)
     plt.plot(list_temps, presion[i,:])
-                
+
+plt.subplot(1,2,1)
+plt.grid(True)
+plt.xlabel('$r$', fontsize = 15)
+plt.ylabel('$g(r)$', fontsize = 15)
+plt.title('Función de distribución radial', fontsize = 20)
+ax = plt.gca()
+ax.set_xticklabels(ax.get_xticks(), fontsize = 15)
+ax.set_yticklabels(ax.get_yticks(), fontsize = 15)
+plt.legend()
+
+plt.subplot(1,2,2)
+plt.grid(True)
+plt.xlabel('$r$', fontsize = 15)
+plt.ylabel('$g(r)$', fontsize = 15)
+plt.title('Función de distribución radial', fontsize = 20)
+ax = plt.gca()
+ax.set_xticklabels(ax.get_xticks(), fontsize = 15)
+ax.set_yticklabels(ax.get_yticks(), fontsize = 15)
+plt.legend()
