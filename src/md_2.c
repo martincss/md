@@ -28,7 +28,7 @@ int main(int argc, char **argv) {
 
   int cant_rho = 10;							// cantidad de densidades
   int cant_temps = 2;           // cantidad de temperaturas
-  int cant_sample = 10;					// cantidad de samples
+  int cant_sample = 2;					// cantidad de samples
 
   float incr_temp = (temp_inicial - temp_final)/(cant_temps-1);
   float incr_rho = (rho_final - rho_inicial)/(cant_rho-1);
@@ -81,7 +81,7 @@ int main(int argc, char **argv) {
 
 
     printf("========================================== RHO = %f\n", rho);
-    printf("================================= TEMP = %f\n", temperatura);
+    printf("================================= TEMP = %f\n", temp_inicial);
     /*
     Tomamos el sample para la temperatura inicial y luego hacemos el
     loop sobre temperaturas con rescaling, tomando datos.
@@ -159,7 +159,7 @@ int main(int argc, char **argv) {
         total_energy(0, kinetic, potential, E_sample);
         temperatura_samp = temperature(n_part, vel_x_post, vel_y_post, vel_z_post);
         P_sample = pressure(n_part, l, rho, pos_x_post, pos_y_post, pos_z_post, R_CUT2, temperatura_samp);
-
+        printf("con t_samp = %f tenemos presion = %f\n", temperatura_samp, P_sample);
         E_prom[r*cant_rho] += E_sample[0]/cant_sample;
         p_prom[r*cant_rho] += P_sample/cant_sample;
       }
@@ -171,7 +171,7 @@ int main(int argc, char **argv) {
       temperatura -= incr_temp;
       printf("===================================== TEMP = %f\n", temperatura);
       rescaling(temperatura_samp, temperatura, n_part, vel_x_ant, vel_y_ant, vel_z_ant);
-
+      printf("HECHO EL RESCALING \n");
       // iteracion temporal hasta termalizar
     // =========================================================
       int i;
@@ -240,6 +240,7 @@ int main(int argc, char **argv) {
           total_energy(0, kinetic, potential, E_sample);
           temperatura_samp = temperature(n_part, vel_x_post, vel_y_post, vel_z_post);
           P_sample = pressure(n_part, l, rho, pos_x_post, pos_y_post, pos_z_post, R_CUT2, temperatura_samp);
+          printf("con t_samp = %f tenemos presion = %f\n", temperatura_samp, P_sample);
           // s es la iteracion actual de temperatura
           E_prom[r*cant_rho + s] += E_sample[0]/cant_sample;
           p_prom[r*cant_rho + s] += P_sample/cant_sample;

@@ -176,7 +176,7 @@ float eval_LJ(float dist2, float r_cut){
 
   }
   if (F>10000){
-    printf("la fuerza se paso de 10000\n");
+    printf("la fuerza se paso de 10000 con dist2 = %f\n", dist2);
   }
   return F;
 }
@@ -454,9 +454,6 @@ float pressure(int n_part, float l, float rho, float* x, float* y, float* z, flo
       invr2 = 1./distancia2;
       if (distancia2 < r_cut2) {
           w += 48*(pow(invr2,3) - 0.5)*pow(invr2,3);
-          if (w > 0) {
-            // printf("con distancia2 = %f, tengo w negativo\n", distancia2);
-          }
       }
     }
   }
