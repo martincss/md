@@ -28,7 +28,7 @@ int main(int argc, char **argv) {
 
   int cant_rho = 10;							// cantidad de densidades
   int cant_temps = 2;           // cantidad de temperaturas
-  int cant_sample = 2;					// cantidad de samples
+  int cant_sample = 1;					// cantidad de samples MENOS UNO (por como se da el loop)
 
   float incr_temp = (temp_inicial - temp_final)/(cant_temps-1);
   float incr_rho = (rho_final - rho_inicial)/(cant_rho-1);
@@ -120,11 +120,12 @@ int main(int argc, char **argv) {
       }
 
     }
+    printf("\n HECHA LA TERMALIZACION\n \n");
 	// ========================================================
 
 	/* a partir de acá, se evoluciona el sistema desde termalizacion,
 	y cada tiempo_desc pasos se toman datos para el sampleo */
-    for (i = 0; i < cant_sample*tiempo_desc; i++) {
+    for (i = 0; i < cant_sample*tiempo_desc + 1; i++) {
 	  // evolucion temporal ====================================
       time_evol(n_part, l, PASO, PASO2, pos_x_ant, pos_x_post,
                 pos_y_ant, pos_y_post, pos_z_ant,
@@ -149,6 +150,7 @@ int main(int argc, char **argv) {
         fuerza_y_ant[j] = fuerza_y_post[j];
         fuerza_z_ant[j] = fuerza_z_post[j];
       }
+      // printf("iteracion post-termalizacion i = %i\n", i);
 	  // =======================================================
 
       // cuando el tiempo es multiplo del tiempo de sampleo, calcula la g para todos los r
@@ -160,8 +162,8 @@ int main(int argc, char **argv) {
         temperatura_samp = temperature(n_part, vel_x_post, vel_y_post, vel_z_post);
         P_sample = pressure(n_part, l, rho, pos_x_post, pos_y_post, pos_z_post, R_CUT2, temperatura_samp);
         printf("con t_samp = %f tenemos presion = %f\n", temperatura_samp, P_sample);
-        E_prom[r*cant_rho] += E_sample[0]/cant_sample;
-        p_prom[r*cant_rho] += P_sample/cant_sample;
+        E_prom[r*cant_temps] += E_sample[0]/(cant_sample+1);
+        p_prom[r*cant_temps] += P_sample/(cant_sample+1);
       }
     }
 
@@ -201,11 +203,12 @@ int main(int argc, char **argv) {
         }
 
       }
+      printf("\n HECHA LA TERMALIZACION\n \n");
     // ========================================================
 
     /* a partir de acá, se evoluciona el sistema desde termalizacion,
     y cada tiempo_desc pasos se toman datos para el sampleo */
-      for (i = 0; i < cant_sample*tiempo_desc; i++) {
+      for (i = 0; i < cant_sample*tiempo_desc + 1; i++) {
       // evolucion temporal ====================================
         time_evol(n_part, l, PASO, PASO2, pos_x_ant, pos_x_post,
                   pos_y_ant, pos_y_post, pos_z_ant,
@@ -241,9 +244,9 @@ int main(int argc, char **argv) {
           temperatura_samp = temperature(n_part, vel_x_post, vel_y_post, vel_z_post);
           P_sample = pressure(n_part, l, rho, pos_x_post, pos_y_post, pos_z_post, R_CUT2, temperatura_samp);
           printf("con t_samp = %f tenemos presion = %f\n", temperatura_samp, P_sample);
-          // s es la iteracion actual de temperatura
-          E_prom[r*cant_rho + s] += E_sample[0]/cant_sample;
-          p_prom[r*cant_rho + s] += P_sample/cant_sample;
+          // // s es la iteracion actual de temperatura
+          E_prom[r*cant_temps + s] += E_sample[0]/(cant_sample + 1);
+          p_prom[r*cant_temps + s] += P_sample/(cant_sample + 1);
         }
       }
 
@@ -263,8 +266,8 @@ int main(int argc, char **argv) {
       temperatura = temp_inicial + incr_temp;
       for (int s = 0; s < cant_temps; s++) {
         temperatura -= incr_temp;
-        printf("rho = %.4f temp = %.4f E = %.4f P = %.4f\n", rho, temperatura, E_prom[r*cant_rho + s], p_prom[r*cant_rho + s]);
-        fprintf(fdat,"%.4g,%.4g,%.4g,%.4g\n", rho, temperatura, E_prom[r*cant_rho + s], p_prom[r*cant_rho + s]);
+        printf("rho = %.4f temp = %.4f E = %.4f P = %.4f\n", rho, temperatura, E_prom[r*cant_temps + s], p_prom[r*cant_temps + s]);
+        fprintf(fdat,"%.4g,%.4g,%.4g,%.4g\n", rho, temperatura, E_prom[r*cant_temps + s], p_prom[r*cant_temps + s]);
       }
   }
 
@@ -272,29 +275,29 @@ int main(int argc, char **argv) {
   fflush(fdat);
   fclose(fdat);
 
-  // free(pos_x_ant);
-  // free(pos_x_post);
-  // free(pos_y_ant);
-  // free(pos_y_post);
-  // free(pos_z_ant);
-  // free(pos_z_post);
-  // free(vel_x_ant);
-  // free(vel_x_post);
-  // free(vel_y_ant);
-  // free(vel_y_post);
-  // free(vel_z_ant);
-  // free(vel_z_post);
-  // free(fuerza_x_ant);
-  // free(fuerza_x_post);
-  // free(fuerza_y_ant);
-  // free(fuerza_y_post);
-  // free(fuerza_z_ant);
-  // free(fuerza_z_post);
-  // free(potential);
-  // free(kinetic);
-  // free(E_sample);
-  // free(E_prom);
-  // free(p_prom);
+  free(pos_x_ant);
+  free(pos_x_post);
+  free(pos_y_ant);
+  free(pos_y_post);
+  free(pos_z_ant);
+  free(pos_z_post);
+  free(vel_x_ant);
+  free(vel_x_post);
+  free(vel_y_ant);
+  free(vel_y_post);
+  free(vel_z_ant);
+  free(vel_z_post);
+  free(fuerza_x_ant);
+  free(fuerza_x_post);
+  free(fuerza_y_ant);
+  free(fuerza_y_post);
+  free(fuerza_z_ant);
+  free(fuerza_z_post);
+  free(potential);
+  free(kinetic);
+  free(E_sample);
+  free(E_prom);
+  free(p_prom);
 
   return 0;
 }

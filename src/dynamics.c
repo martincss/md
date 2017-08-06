@@ -177,6 +177,7 @@ float eval_LJ(float dist2, float r_cut){
   }
   if (F>10000){
     printf("la fuerza se paso de 10000 con dist2 = %f\n", dist2);
+    getchar();
   }
   return F;
 }
@@ -362,7 +363,7 @@ int rescaling(float T_inicial, float T_final, int n_part, float* vel_x, float* v
 		vel_z[i] *= scale;
 	}
 
-	// por las dudas les saca el valor medio..
+	//por las dudas les saca el valor medio..
 	float s_x = 0;
 	float s_y = 0;
 	float s_z = 0;
