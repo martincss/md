@@ -11,7 +11,7 @@
 int main(int argc, char **argv) {
 
   FILE *fdat;
-  fdat = fopen("../data/md_2_prueba.csv", "w");
+  fdat = fopen("../data/md_2_prueba_125_r5_t10.csv", "w");
   fprintf(fdat, "rho  temp  E  P\n");
 
   // Inicializamos numero de particulas
@@ -27,8 +27,8 @@ int main(int argc, char **argv) {
   float temp_final = 0.4;
 
   int cant_rho = 5;							// cantidad de densidades
-  int cant_temps = 10;           // cantidad de temperaturas
-  int cant_sample = 10;					// cantidad de samples MENOS UNO (por como se da el loop)
+  int cant_temps = 20;           // cantidad de temperaturas
+  int cant_sample = 50;					// cantidad de samples MENOS UNO (por como se da el loop)
 
   float incr_temp = (temp_inicial - temp_final)/(cant_temps-1);
   float incr_rho = (rho_final - rho_inicial)/(cant_rho-1);
