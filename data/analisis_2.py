@@ -4,13 +4,13 @@ from __future__ import division
 import numpy as np
 import matplotlib.pyplot as plt
 
-datos = np.loadtxt('md_2_prueba.csv', delimiter=',', skiprows=1)
-rho_inicial = 0.4
+datos = np.loadtxt('md_2_512_r8_t20.csv', delimiter=',', skiprows=1)
+rho_inicial = 0.1
 rho_final = 0.8
 temp_inicial = 2.0
 temp_final = 0.4
-cant_rhos = 5
-cant_temps = 10
+cant_rhos = 8
+cant_temps = 20
 
 list_rhos = np.linspace(rho_inicial, rho_final, cant_rhos)
 list_temps = np.linspace(temp_inicial, temp_final, cant_temps)

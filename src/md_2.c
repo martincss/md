@@ -11,22 +11,22 @@
 int main(int argc, char **argv) {
 
   FILE *fdat;
-  fdat = fopen("../data/md_2_prueba_125_r5_t10.csv", "w");
+  fdat = fopen("../data/md_2_prueba_512_r3_compl_t20.csv", "w");
   fprintf(fdat, "rho  temp  E  P\n");
 
   // Inicializamos numero de particulas
   srand(time(NULL));
-  int n_part = 125;
+  int n_part = 512;
   float l;
   int steps_term = 4000; // tiempo de termalizacion
   int tiempo_desc = 500; // tiempo de descorrelacion
   //=======================================================
-  float rho_inicial = 0.4; // tomar acá el valor mínimo, para que empieze por la l máxima
-  float rho_final = 0.8;
+  float rho_inicial = 0.1; // tomar acá el valor mínimo, para que empieze por la l máxima
+  float rho_final = 0.3;
   float temp_inicial = 2.0;
   float temp_final = 0.4;
 
-  int cant_rho = 5;							// cantidad de densidades
+  int cant_rho = 3;							// cantidad de densidades
   int cant_temps = 20;           // cantidad de temperaturas
   int cant_sample = 50;					// cantidad de samples MENOS UNO (por como se da el loop)
 
