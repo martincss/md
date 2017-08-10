@@ -9,21 +9,27 @@
 #define PASO2 0.00005          // esto es paso al cuadrado sobre dos
 #define R_CUT2 6.25   // el posta es 6.25
 
-// pasos a seguir:
-// calcular la energia (chequear que sea cte)
-// calcular presion
-
 int main(int argc, char **argv) {
 
   hola();
   // Inicializamos numero de particulas
-  int n_part = 512;
-  float rho = 1; // la posta es 0.8442;
+  int n_part = 125;
+  float rho = 1.2; // la posta es 0.8442;
   float l;
   l = pow((float)n_part/rho, 1./3.);
-  int steps = 10000;
+  int steps = 5000;
+  int t_samp = 10;
   float temp_inicial = 0.728;
   srand(time(NULL));
+  
+  /* 
+  Abrimos el archivo de registro de posiciones
+  En tres líneas consecutivas se registrarán las posiciones x y z de
+  todas las partículas, para un instante temporal.
+  */
+  FILE *fdat;
+  fdat = fopen("../data/prueba_pos_n125_t500.csv", "w");
+  fprintf(fdat, "n = %i\n", n_part);
 
   // Inicializamos arrays de energias cinetica, potencial y total
   float* potential = calloc(steps, sizeof(float));
@@ -165,11 +171,24 @@ int main(int argc, char **argv) {
       fuerza_y_ant[j] = fuerza_y_post[j];
       fuerza_z_ant[j] = fuerza_z_post[j];
     }
-
-  // float r = 0.2;
-  // float delta_r = 3;
-  // float distribucion_radial;
-  // distribucion_radial = g(rho, l, r, delta_r, n_part, pos_x_post, pos_y_post, pos_z_post);
+	
+	if (i % t_samp == 0){
+		for(j = 0; j < n_part-1; j++){
+			fprintf(fdat, "%.3g,", pos_x_post[j]);
+		}
+		fprintf(fdat, "%.3g", pos_x_post[n_part-1]);
+		fprintf(fdat, "\n");
+		for(j = 0; j < n_part-1; j++){
+			fprintf(fdat, "%.3g,", pos_y_post[j]);
+		}
+		fprintf(fdat, "%.3g", pos_y_post[n_part-1]);
+		fprintf(fdat, "\n");
+		for(j = 0; j < n_part-1; j++){
+			fprintf(fdat, "%.3g,", pos_z_post[j]);
+		}
+		fprintf(fdat, "%.3g", pos_z_post[n_part-1]);
+		fprintf(fdat, "\n");
+	}
   }
 
   free(pos_x_ant);
