@@ -13,22 +13,22 @@ int main(int argc, char **argv) {
 
   hola();
   // Inicializamos numero de particulas
-  int n_part = 125;
-  float rho = 1.2; // la posta es 0.8442;
+  int n_part = 216;
+  float rho = 0.4; // la posta es 0.8442;
   float l;
   l = pow((float)n_part/rho, 1./3.);
-  int steps = 5000;
-  int t_samp = 10;
-  float temp_inicial = 0.728;
+  int steps = 100;
+  int t_samp = 1;
+  float temp_inicial = 10.0;
   srand(time(NULL));
-  
-  /* 
+
+  /*
   Abrimos el archivo de registro de posiciones
   En tres líneas consecutivas se registrarán las posiciones x y z de
   todas las partículas, para un instante temporal.
   */
   FILE *fdat;
-  fdat = fopen("../data/prueba_pos_n125_t500.csv", "w");
+  fdat = fopen("../data/animation/n216_T100_t100.csv", "w");
   fprintf(fdat, "n = %i\n", n_part);
 
   // Inicializamos arrays de energias cinetica, potencial y total
@@ -171,7 +171,7 @@ int main(int argc, char **argv) {
       fuerza_y_ant[j] = fuerza_y_post[j];
       fuerza_z_ant[j] = fuerza_z_post[j];
     }
-	
+
 	if (i % t_samp == 0){
 		for(j = 0; j < n_part-1; j++){
 			fprintf(fdat, "%.3g,", pos_x_post[j]);
