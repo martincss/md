@@ -5,8 +5,8 @@
 #include "pruebas_pos.h"
 #include <math.h>
 
-#define PASO 0.01
-#define PASO2 0.00005          // esto es paso al cuadrado sobre dos
+#define PASO 0.0001
+#define PASO2 0.000000005          // esto es paso al cuadrado sobre dos
 #define R_CUT2 6.25   // el posta es 6.25
 
 int main(int argc, char **argv) {
